@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>传家录 - 人生故事（创建）</title>
+  <link rel="stylesheet" href="../../css/main.css">
+  <script>window.PAGE_CONFIG = { activeTab: "memoir" };</script>
+</head>
+<body data-active-module="chuanjia">
+  <div class="phone page--memoir-edit">
+    <div data-include="page-header"></div>
+    <div data-include="editor-header" data-props='{"title":"人生故事","cancelHref":"home.html"}'></div>
+
+    <div class="phone__scroll" style="padding: 12px 16px 20px;">
+      <div data-include="memoir-title-input"></div>
+      <div id="memoirChaptersList">
+        <div data-include="memoir-chapter-input" data-props='{"dateLabel":"XX年XX月"}'></div>
+        <div data-include="memoir-chapter-input" data-props='{"dateLabel":"XX年XX月"}'></div>
+      </div>
+      <button type="button" class="btn-add-chapter" id="addMemoirChapterBtn">+ 添加篇章</button>
+    </div>
+
+    <div data-include="bottom-nav"></div>
+  </div>
+  <script src="../../../js/voice-mode.js"></script>
+    <script src="../../../js/auth.js"></script>
+  <script src="../../../js/nav.js"></script>
+    <script src="../../../js/family-avatars.js"></script>
+  <script src="../../js/app.js"></script>
+  <script src="../../js/interactions.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+  <circle cx="40" cy="40" r="38" fill="#FFF3E0" stroke="#FF9800" stroke-width="3"/>
+  <text x="40" y="36" text-anchor="middle" fill="#FF9800" font-size="11" font-weight="bold" font-family="sans-serif">结业</text>
+  <text x="40" y="52" text-anchor="middle" fill="#666" font-size="9" font-family="sans-serif">进阶课程</text>
+</svg>

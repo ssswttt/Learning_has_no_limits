@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>自留地</title>
+    <link rel="stylesheet" href="css/app-shell.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        }
+        /* 长辈模式样式见 css/elder-mode.css（全站生效） */
+
+        .page-title {
+            width: 100%;
+            height: 50px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+        .back-btn {
+            position: absolute;
+            left: 16px;
+            font-size: 18px;
+            color: #333;
+            cursor: pointer;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            z-index: 999;
+            display: none;
+        }
+        .home-header {
+            background: linear-gradient(to right, #E6F9E0, #60C692);
+            border-radius: 10px;
+            margin: 12px;
+            padding: 16px;
+            color: #333;
+        }
+        .home-header .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #ddd;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+            overflow: hidden;
+        }
+        .home-header .avatar img,
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .home-header .info {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .home-header .name {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .home-header .desc {
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+        }
+        .family-card {
+            background: #fff;
+            border-radius: 10px;
+            margin: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .family-title {
+            font-size: 14px;
+            color: #60C692;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        .family-list {
+            display: flex;
+            gap: 16px;
+        }
+        .family-item {
+            text-align: center;
+        }
+        .family-item .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ddd;
+            margin-bottom: 3px;
+            overflow: hidden;
+        }
+        .family-item .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .family-item .name {
+            font-size: 12px;
+            color: #333;
+        }
+        .menu-card {
+            background: #fff;
+            border-radius: 10px;
+            margin: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+        .menu-item .icon {
+            color: #60C692;
+            margin-right: 10px;
+            font-size: 15px;
+        }
+        .menu-item .text {
+            font-size: 13px;
+            color: #333;
+        }
+        .menu-item .arrow {
+            color: #999;
+            font-size: 13px;
+        }
+        /*主页菜单内开关样式*/
+        .switch{
+            width:46px;height:26px;border-radius:99px;background:#ccc;position:relative;cursor:pointer;transition:.3s;
+        }
+        .switch.on{background:#60C692;}
+        .switch::after{content:'';width:22px;height:22px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:.3s;}
+        .switch.on::after{left:22px;}
+
+        .nav-item {
+            text-align: center;
+            color: #999;
+            font-size: 10px;
+        }
+        .nav-item .icon {
+            font-size: 18px;
+            margin-bottom: 3px;
+        }
+        .study-page {
+            background: linear-gradient(to bottom, #60C692, #E6F9E0);
+            min-height: 100vh;
+        }
+        .study-header-bg {
+            height: 180px;
+            background: #60C692;
+            position: relative;
+        }
+        .study-header-illustration {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 150px;
+            opacity: 0.9;
+        }
+        .tab-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            margin: -60px 16px 20px;
+            padding: 20px 16px 24px;
+            position: relative;
+            z-index: 1;
+            min-height: 520px;
+        }
+        .tab-bar {
+            display: flex;
+            background: #fff;
+            border-radius: 20px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            border-radius: 16px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .tab-btn.active {
+            background: #60C692;
+            color: #fff;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .calendar {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        .calendar-weekdays {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .calendar-legend {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .legend-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            text-align: center;
+            font-size: 13px;
+        }
+        .calendar-day {
+            padding: 8px 0;
+        }
+        .calendar-day.course {
+            background: #60C692;
+            color: #fff;
+            border-radius: 50%;
+        }
+        .calendar-day.absent {
+            background: #ff6b6b;
+            color: #fff;
+            border-radius: 50%;
+        }
+        .calendar-day.today {
+            border: 2px solid #60C692;
+            border-radius: 50%;
+            color: #333;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+        .stat-title {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            font-size: 20px;
+            color: #60C692;
+            font-weight: 500;
+        }
+        .badge-scroll-wrap {
+            max-height: 420px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .badge-scroll-wrap::-webkit-scrollbar {
+            display: none;
+        }
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding-bottom: 10px;
+        }
+        .badge-item {
+            text-align: center;
+        }
+        .badge-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: #ddd;
+            margin: 0 auto 6px;
+            overflow: hidden;
+        }
+        .badge-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .badge-name {
+            font-size: 12px;
+            color: #333;
+        }
+        .badge-item.locked .badge-icon {
+            filter: grayscale(100%);
+            opacity: 0.35;
+        }
+        .badge-item.locked .badge-name {
+            color: #999;
+        }
+        .collect-history-page {
+            background: #F5F5F5;
+            min-height: 100vh;
+        }
+        .collect-tab-bar {
+            display: flex;
+            background: #fff;
+            border-radius: 20px;
+            padding: 4px;
+            margin: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .collect-tab-btn {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            border-radius: 16px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .collect-tab-btn.active {
+            background: #60C692;
+            color: #fff;
+        }
+        .collect-content {
+            display: none;
+        }
+        .collect-content.active {
+            display: block;
+        }
+        .collect-list {
+            margin: 0 12px 12px;
+        }
+        .collect-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .collect-empty {
+            text-align: center;
+            padding: 48px 16px;
+            color: #999;
+            font-size: 14px;
+        }
+        .collect-item-info {
+            flex: 1;
+        }
+        .collect-item-title {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        .collect-item-desc {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .collect-item-author {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #666;
+        }
+        .collect-item-author .avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ddd;
+            overflow: hidden;
+        }
+        .collect-item-author .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .collect-item-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            background: #ddd;
+            overflow: hidden;
+        }
+        .collect-item-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 设置页面样式 */
+        .setting-card{
+            background:#fff;
+            margin:16px;
+            border-radius:12px;
+            padding:20px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.07);
+        }
+        .inp-item{margin:12px 0;}
+        .inp-item label{display:block;font-size:14px;color:#555;margin-bottom:5px;}
+        .inp-item input{width:100%;height:42px;border:1px solid #ddd;border-radius:8px;padding:0 12px;font-size:15px;outline:none;}
+        .save-btn{width:100%;height:44px;background:#60C692;color:#fff;border:none;border-radius:8px;margin-top:10px;font-size:15px;cursor:pointer;}
+        .feedback-text{width:100%;min-height:90px;border:1px solid #ddd;border-radius:8px;padding:10px;resize:none;outline:none;font-size:14px;margin:8px 0;}
+        .logout-btn{width:100%;height:44px;background:#ee5555;color:#fff;border:none;border-radius:8px;margin-top:12px;font-size:15px;cursor:pointer;}
+        .avatar-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 4px;
+        }
+        .setting-avatar-wrap {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #eee;
+            flex-shrink: 0;
+        }
+        .setting-avatar-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .avatar-change-btn {
+            padding: 8px 16px;
+            border: 1px solid #60C692;
+            background: #E6F9E0;
+            color: #2d8a5e;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .avatar-tip {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+        .guest-login-bar {
+            margin: 12px;
+            padding: 20px 16px;
+            background: linear-gradient(135deg, #E8F8F5, #fff);
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .guest-login-btn {
+            width: 100%;
+            height: 48px;
+            border: none;
+            border-radius: 24px;
+            background: #60C692;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        body.guest-mode .guest-hide { display: none !important; }
+        body.guest-mode .guest-only { display: block !important; }
+        .guest-only { display: none; }
+    </style>
+</head>
+<body data-active-module="ziliudi">
+    <div class="toast" id="toast"></div>
+
+    <!-- 自留地主页 -->
+    <div class="page active" id="home">
+        <div class="page-title">自留地</div>
+        <div class="guest-login-bar guest-only" id="guestLoginBar">
+            <button type="button" class="guest-login-btn" onclick="goLoginPage()">立即登录</button>
+        </div>
+        <div class="home-header guest-hide">
+            <div class="avatar">
+                <img id="homeAvatar" class="avatar-img" src="https://images.unsplash.com/photo-1557862921-37829c790f19?w=200&q=80" alt="个人头像">
+            </div>
+            <div class="info">
+                <div class="name" id="homeNick">海阔天空</div>
+                <div class="desc">0 关注<br>id:123456<br><span id="homeSign">不以善小而不为</span></div>
+            </div>
+        </div>
+        <div class="family-card guest-hide">
+            <div class="family-title">我的家人</div>
+            <div class="family-list">
+                <div class="family-item">
+                    <div class="avatar"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80" alt="女儿"></div>
+                    <div class="name">女儿</div>
+                </div>
+                <div class="family-item">
+                    <div class="avatar"><img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80" alt="妻子"></div>
+                    <div class="name">妻子</div>
+                </div>
+                <div class="family-item">
+                    <div class="avatar"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" alt="女婿"></div>
+                    <div class="name">女婿</div>
+                </div>
+            </div>
+        </div>
+        <div class="menu-card guest-hide">
+            <div class="menu-item" onclick="switchPage('home','study')">
+                <div style="display:flex;align-items:center;">
+                    <span class="icon">👥</span>
+                    <span class="text">学习足迹与徽章证书</span>
+                </div>
+                <span class="arrow">›</span>
+            </div>
+            <div class="menu-item" onclick="switchPage('home','collect')">
+                <div style="display:flex;align-items:center;">
+                    <span class="icon">📁</span>
+                    <span class="text">收藏、历史浏览</span>
+                </div>
+                <span class="arrow">›</span>
+            </div>
+        </div>
+        <div class="menu-card">
+            <div class="menu-item guest-hide" onclick="window.location.href='familyBind.html'">
+                <div style="display:flex;align-items:center;">
+                    <span class="icon">🏠</span>
+                    <span class="text">家庭账号绑定与远程协助</span>
+                </div>
+                <span class="arrow">›</span>
+            </div>
+            <!--【长辈模式开关留在Home】 -->
+            <div class="menu-item">
+                <div style="display:flex;align-items:center;">
+                    <span class="icon">👵</span>
+                    <span class="text">长辈模式（全站字体放大）</span>
+                </div>
+                <div class="switch" id="switchElder"></div>
+            </div>
+            <!--【语音开关留在Home，开启自动切页朗读】 -->
+            <div class="menu-item">
+                <div style="display:flex;align-items:center;">
+                    <span class="icon">🔊</span>
+                    <span class="text">语音音量开关（全站切页自动朗读）</span>
+                </div>
+                <div class="switch" id="switchVoice"></div>
+            </div>
+            <div class="menu-item guest-hide" onclick="switchPage('home','settingPage')">
+                <div style="display:flex;align-items:center;">
+                    <span class="icon">⚙️</span>
+                    <span class="text">设置</span>
+                </div>
+                <span class="arrow">›</span>
+            </div>
+        </div>
+        <div class="bottom-nav global-bottom-nav">
+            <div class="nav-item" data-nav-module="baixiaotang"><div class="icon">💡</div><div>百晓堂</div></div>
+            <div class="nav-item" data-nav-module="wanhua"><div class="icon">📺</div><div>万花筒</div></div>
+            <div class="nav-item" data-nav-module="gongxuetang"><div class="icon">🌿</div><div>共学堂</div></div>
+            <div class="nav-item" data-nav-module="chuanjia"><div class="icon">📤</div><div>传家录</div></div>
+            <div class="nav-item active" data-nav-module="ziliudi"><div class="icon">🏠</div><div>自留地</div></div>
+        </div>
+    </div>
+
+    <!-- 设置页面【已移除长辈、语音开关】 -->
+    <div class="page" id="settingPage">
+        <div class="page-title">
+            <span class="back-btn" onclick="switchPage('settingPage','home')">‹</span>
+            设置
+        </div>
+        <!-- 1.账号信息修改 -->
+        <div class="setting-card">
+            <div style="font-size:17px;margin-bottom:12px;font-weight:500;color:#333;">账号信息</div>
+            <div class="inp-item">
+                <label>个人头像</label>
+                <div class="avatar-upload-row">
+                    <div class="setting-avatar-wrap">
+                        <img id="settingAvatarPreview" src="https://images.unsplash.com/photo-1557862921-37829c790f19?w=200&q=80" alt="头像预览">
+                    </div>
+                    <button type="button" class="avatar-change-btn" id="avatarChangeBtn">更换头像</button>
+                </div>
+                <div class="avatar-tip">支持 JPG、PNG 格式，建议 200×200 以上</div>
+                <input type="file" id="avatarFileInput" accept="image/*" hidden>
+            </div>
+            <div class="inp-item">
+                <label>昵称</label>
+                <input id="inpNick" placeholder="请输入昵称">
+            </div>
+            <div class="inp-item">
+                <label>座右铭</label>
+                <input id="inpSign" placeholder="个性签名/座右铭">
+            </div>
+            <div class="inp-item">
+                <label>性别</label>
+                <input id="inpSex" placeholder="男/女/保密">
+            </div>
+            <div class="inp-item">
+                <label>年龄</label>
+                <input id="inpAge" placeholder="填写年龄">
+            </div>
+            <button class="save-btn" onclick="saveUserInfo()">保存账号信息</button>
+        </div>
+        <!-- 2.意见反馈 -->
+        <div class="setting-card">
+            <div style="font-size:17px;margin-bottom:8px;font-weight:500;">意见反馈</div>
+            <textarea class="feedback-text" id="feedTxt" placeholder="请输入反馈内容..."></textarea>
+            <button class="save-btn" onclick="submitFeed()">提交反馈</button>
+        </div>
+        <!-- 3.退出登录 -->
+        <div class="setting-card">
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+    </div>
+
+    <div class="page study-page" id="study">
+        <div class="page-title">
+            <span class="back-btn" onclick="switchPage('study','home')">‹</span>
+            学习足迹与徽章证书
+        </div>
+        <div class="study-header-bg">
+            <div class="study-header-illustration">
+                <svg width="200" height="150" viewBox="0 0 200 150">
+                    <rect x="20" y="20" width="60" height="80" fill="#52C41A" opacity="0.2" rx="8"/>
+                    <rect x="120" y="10" width="60" height="100" fill="#52C41A" opacity="0.2" rx="8"/>
+                    <path d="M60 100 L90 40 L110 50 L130 30 L150 40" stroke="#FF9500" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="170" cy="30" r="15" fill="#FFD700"/>
+                    <text x="170" y="35" text-anchor="middle" fill="#fff" font-size="16">+</text>
+                    <circle cx="110" cy="80" r="12" fill="#FFD700"/>
+                    <text x="110" y="85" text-anchor="middle" fill="#fff" font-size="14">+</text>
+                </svg>
+            </div>
+        </div>
+        <div class="tab-container">
+            <div class="tab-bar">
+                <div class="tab-btn active" onclick="switchTab('study')">学习足迹</div>
+                <div class="tab-btn" onclick="switchTab('badge')">徽章证书</div>
+            </div>
+            <div class="tab-content active" id="study-tab">
+                <div class="calendar">
+                    <div class="calendar-weekdays">
+                        <span>周日</span><span>周一</span><span>周二</span><span>周三</span><span>周四</span><span>周五</span><span>周六</span>
+                    </div>
+                    <div class="calendar-legend">
+                        <div class="legend-item"><span class="legend-dot" style="background:#60C692"></span><span>课程</span></div>
+                        <div class="legend-item"><span class="legend-dot" style="background:#ff6b6b"></span><span>缺勤</span></div>
+                        <div class="legend-item"><span class="legend-dot" style="background:#ccc"></span><span>非考勤时间</span></div>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-day" style="color:#ccc">27</div>
+                        <div class="calendar-day" style="color:#ccc">28</div>
+                        <div class="calendar-day" style="color:#ccc">29</div>
+                        <div class="calendar-day" style="color:#ccc">30</div>
+                        <div class="calendar-day" style="color:#ccc">31</div>
+                        <div class="calendar-day" style="color:#ccc">1</div>
+                        <div class="calendar-day" style="color:#ccc">2</div>
+                        <div class="calendar-day" style="color:#ccc">3</div>
+                        <div class="calendar-day" style="color:#ccc">4</div>
+                        <div class="calendar-day" style="color:#ccc">5</div>
+                        <div class="calendar-day course">6</div>
+                        <div class="calendar-day absent">7</div>
+                        <div class="calendar-day course">8</div>
+                        <div class="calendar-day" style="color:#ccc">9</div>
+                        <div class="calendar-day today course">10</div>
+                        <div class="calendar-day">11</div>
+                        <div class="calendar-day">12</div>
+                        <div class="calendar-day">13</div>
+                        <div class="calendar-day">14</div>
+                        <div class="calendar-day">15</div>
+                        <div class="calendar-day">16</div>
+                        <div class="calendar-day">17</div>
+                        <div class="calendar-day">18</div>
+                        <div class="calendar-day">19</div>
+                        <div class="calendar-day">20</div>
+                        <div class="calendar-day">21</div>
+                        <div class="calendar-day">22</div>
+                        <div class="calendar-day">23</div>
+                        <div class="calendar-day">24</div>
+                        <div class="calendar-day">25</div>
+                        <div class="calendar-day">26</div>
+                        <div class="calendar-day">27</div>
+                        <div class="calendar-day">28</div>
+                        <div class="calendar-day">29</div>
+                        <div class="calendar-day">30</div>
+                        <div class="calendar-day">31</div>
+                    </div>
+                </div>
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-title">累计学习时长</div>
+                        <div class="stat-value">176小时37分</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">已完成课程数</div>
+                        <div class="stat-value">6节</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">连续打卡天数</div>
+                        <div class="stat-value">5天</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">总学习天数</div>
+                        <div class="stat-value">28天</div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-content" id="badge-tab">
+                <div class="badge-scroll-wrap">
+                    <div class="badge-grid">
+                        <div class="badge-item">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-cert-basic.svg" alt="证书"></div>
+                            <div class="badge-name">入门课程结业</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-cert-advanced.svg" alt="证书"></div>
+                            <div class="badge-name">进阶课程结业</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-10h.svg" alt="徽章"></div>
+                            <div class="badge-name">学习10小时</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-50h.svg" alt="徽章"></div>
+                            <div class="badge-name">学习50小时</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-7days.svg" alt="徽章"></div>
+                            <div class="badge-name">连续打卡7天</div>
+                        </div>
+                        <div class="badge-item">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-3courses.svg" alt="徽章"></div>
+                            <div class="badge-name">完成3门课程</div>
+                        </div>
+                        <div class="badge-item locked">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-100h.svg" alt="徽章"></div>
+                            <div class="badge-name">学习100小时</div>
+                        </div>
+                        <div class="badge-item locked">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-200h.svg" alt="徽章"></div>
+                            <div class="badge-name">学习200小时</div>
+                        </div>
+                        <div class="badge-item locked">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-15days.svg" alt="徽章"></div>
+                            <div class="badge-name">连续打卡15天</div>
+                        </div>
+                        <div class="badge-item locked">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-30days.svg" alt="徽章"></div>
+                            <div class="badge-name">连续打卡30天</div>
+                        </div>
+                        <div class="badge-item locked">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-5courses.svg" alt="徽章"></div>
+                            <div class="badge-name">完成5门课程</div>
+                        </div>
+                        <div class="badge-item locked">
+                            <div class="badge-icon"><img src="assets/ziliudi/badge-10courses.svg" alt="徽章"></div>
+                            <div class="badge-name">完成10门课程</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page collect-history-page" id="collect">
+        <div class="page-title">
+            <span class="back-btn" onclick="switchPage('collect','home')">‹</span>
+            收藏
+        </div>
+        <div class="collect-tab-bar">
+            <div class="collect-tab-btn active" onclick="switchCollectTab('collect')">收藏</div>
+            <div class="collect-tab-btn" onclick="switchCollectTab('history')">历史浏览</div>
+        </div>
+        <div class="collect-content active" id="collect-tab">
+            <div class="collect-list" id="ziliudiCollectList"></div>
+        </div>
+        <div class="collect-content" id="history-tab">
+            <div class="collect-list" id="ziliudiBrowseList"></div>
+        </div>
+    </div>
+
+    <script src="js/voice-mode.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/family-avatars.js"></script>
+    <script src="js/news-storage.js"></script>
+    <script>
+        /** 自留地固定在线图片（刷新不变；个人头像除外，可在设置中替换） */
+        const AV = window.XueWuyaAvatars;
+        const ZILIUDI_IMG = {
+            defaultAvatar: AV.self,
+            familyDaughter: AV.daughter,
+            familyWife: AV.wife,
+            familySonInLaw: AV.sonInLaw,
+            collectAuthor: AV.self,
+            collectThumb: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=200&q=80',
+            badgeCertBasic: 'assets/ziliudi/badge-cert-basic.svg',
+            badgeCertAdvanced: 'assets/ziliudi/badge-cert-advanced.svg',
+            badge10h: 'assets/ziliudi/badge-10h.svg',
+            badge50h: 'assets/ziliudi/badge-50h.svg',
+            badge7days: 'assets/ziliudi/badge-7days.svg',
+            badge3courses: 'assets/ziliudi/badge-3courses.svg',
+            badge100h: 'assets/ziliudi/badge-100h.svg',
+            badge200h: 'assets/ziliudi/badge-200h.svg',
+            badge15days: 'assets/ziliudi/badge-15days.svg',
+            badge30days: 'assets/ziliudi/badge-30days.svg',
+            badge5courses: 'assets/ziliudi/badge-5courses.svg',
+            badge10courses: 'assets/ziliudi/badge-10courses.svg'
+        };
+        const DEFAULT_AVATAR = ZILIUDI_IMG.defaultAvatar;
+
+        function initZiliudiStaticImages() {
+            document.querySelectorAll('.family-item .avatar img').forEach(function(img, i) {
+                const roles = [AV.daughter, AV.wife, AV.sonInLaw];
+                if (roles[i]) img.src = roles[i];
+            });
+        }
+        initZiliudiStaticImages();
+        applyGuestZiliudiUI();
+
+        function goLoginPage() {
+            window.location.href = window.XueWuyaAuth ? XueWuyaAuth.getLoginUrl() : 'login.html';
+        }
+
+        function applyGuestZiliudiUI() {
+            if (!window.XueWuyaAuth || !XueWuyaAuth.isGuest()) return;
+            document.body.classList.add('guest-mode');
+        }
+
+        //用户信息本地存储
+        let userInfo = JSON.parse(localStorage.getItem('userData')) || {
+            nick:"海阔天空",
+            sign:"不以善小而不为",
+            sex:"",
+            age:"",
+            avatar:""
+        };
+        //长辈模式、语音配置（开关DOM在Home，逻辑由全站 js 模块处理）
+        const switchElder = document.getElementById('switchElder');
+        const switchVoice = document.getElementById('switchVoice');
+
+        const inpNick = document.getElementById('inpNick');
+        const inpSign = document.getElementById('inpSign');
+        const inpSex = document.getElementById('inpSex');
+        const inpAge = document.getElementById('inpAge');
+        const homeNick = document.getElementById('homeNick');
+        const homeSign = document.getElementById('homeSign');
+        const homeAvatar = document.getElementById('homeAvatar');
+        const settingAvatarPreview = document.getElementById('settingAvatarPreview');
+        const avatarChangeBtn = document.getElementById('avatarChangeBtn');
+        const avatarFileInput = document.getElementById('avatarFileInput');
+
+        function getAvatarSrc() {
+            return userInfo.avatar || DEFAULT_AVATAR;
+        }
+
+        function applyAvatar(src) {
+            const avatarSrc = src || getAvatarSrc();
+            if (homeAvatar) homeAvatar.src = avatarSrc;
+            if (settingAvatarPreview) settingAvatarPreview.src = avatarSrc;
+        }
+
+        function renderZiliudiNewsItem(item) {
+            var img = item.img || ZILIUDI_IMG.collectThumb;
+            return '<div class="collect-item" data-news-id="' + item.id + '">' +
+                '<div class="collect-item-info">' +
+                '<div class="collect-item-title">' + escapeHtml(item.title) + '</div>' +
+                '<div class="collect-item-desc">' + escapeHtml(item.desc) + '</div>' +
+                '<div class="collect-item-author"><span>' + escapeHtml(item.source) + '</span>' +
+                '<span style="margin-left:8px;color:#999">' + escapeHtml(item.time) + '</span></div>' +
+                '</div>' +
+                '<div class="collect-item-img"><img src="' + img + '" alt="配图"></div>' +
+                '</div>';
+        }
+
+        function escapeHtml(str) {
+            return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function renderZiliudiNewsLists() {
+            if (!window.XueWuyaNewsStorage) return;
+            var collectList = document.getElementById('ziliudiCollectList');
+            var browseList = document.getElementById('ziliudiBrowseList');
+            var collects = XueWuyaNewsStorage.getCollects();
+            var browses = XueWuyaNewsStorage.getBrowseHistory();
+            if (collectList) {
+                collectList.innerHTML = collects.length
+                    ? collects.map(renderZiliudiNewsItem).join('')
+                    : '<div class="collect-empty">暂无收藏，去百晓堂便民资讯看看吧</div>';
+            }
+            if (browseList) {
+                browseList.innerHTML = browses.length
+                    ? browses.map(renderZiliudiNewsItem).join('')
+                    : '<div class="collect-empty">暂无浏览记录</div>';
+            }
+        }
+
+        function bindZiliudiNewsClicks() {
+            document.getElementById('collect').addEventListener('click', function(e) {
+                var item = e.target.closest('.collect-item[data-news-id]');
+                if (!item || !window.XueWuyaNewsStorage) return;
+                window.location.href = XueWuyaNewsStorage.getNewsDetailUrl(item.dataset.newsId);
+            });
+        }
+        bindZiliudiNewsClicks();
+        renderZiliudiNewsLists();
+
+        //页面初始化赋值
+        function initUserView(){
+            homeNick.innerText = userInfo.nick;
+            homeSign.innerText = userInfo.sign;
+            inpNick.value = userInfo.nick;
+            inpSign.value = userInfo.sign;
+            inpSex.value = userInfo.sex;
+            inpAge.value = userInfo.age;
+            applyAvatar();
+        }
+        initUserView();
+
+        if (avatarChangeBtn && avatarFileInput) {
+            avatarChangeBtn.onclick = function() {
+                avatarFileInput.click();
+            };
+            avatarFileInput.onchange = function() {
+                const file = this.files && this.files[0];
+                this.value = '';
+                if (!file) return;
+                if (!file.type.startsWith('image/')) {
+                    showToast('请选择图片文件');
+                    return;
+                }
+                if (file.size > 2 * 1024 * 1024) {
+                    showToast('图片请小于 2MB');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    userInfo.avatar = e.target.result;
+                    localStorage.setItem('userData', JSON.stringify(userInfo));
+                    applyAvatar(userInfo.avatar);
+                    showToast('头像已更新');
+                };
+                reader.readAsDataURL(file);
+            };
+        }
+
+        //主页开关初始化状态
+        if (window.XueWuyaElderMode && XueWuyaElderMode.isEnabled()) {
+            switchElder.classList.add('on');
+        }
+        if (window.XueWuyaVoiceMode && XueWuyaVoiceMode.isEnabled()) {
+            switchVoice.classList.add('on');
+        }
+        //长辈模式点击（与全站 nav.js 逻辑一致）
+        switchElder.onclick = function(){
+            const on = window.XueWuyaElderMode ? XueWuyaElderMode.toggle() : false;
+            this.classList.toggle('on', on);
+            showToast(on ? '已开启长辈模式，全站字体放大' : '关闭长辈模式');
+        }
+        //语音开关点击（与全站 voice-mode.js 逻辑一致）
+        switchVoice.onclick = function(){
+            const on = window.XueWuyaVoiceMode ? XueWuyaVoiceMode.toggle() : false;
+            this.classList.toggle('on', on);
+            if(on){
+                showToast('语音播报开启，切换页面自动朗读');
+            }else{
+                showToast('语音播报关闭，停止朗读');
+            }
+        }
+
+        //保存账号信息
+        function saveUserInfo(){
+            userInfo.nick = inpNick.value.trim()||"海阔天空";
+            userInfo.sign = inpSign.value.trim()||"不以善小而不为";
+            userInfo.sex = inpSex.value.trim();
+            userInfo.age = inpAge.value.trim();
+            if (!userInfo.avatar) userInfo.avatar = '';
+            localStorage.setItem('userData',JSON.stringify(userInfo));
+            initUserView();
+            showToast('账号信息保存成功，主页已同步更新');
+        }
+        //提交反馈
+        function submitFeed(){
+            let txt = document.getElementById('feedTxt').value.trim();
+            if(!txt){showToast('请填写反馈内容');return;}
+            showToast('反馈提交成功，感谢建议');
+            document.getElementById('feedTxt').value = '';
+        }
+
+        //重写页面切换：切页后自动朗读
+        function switchPage(from, to) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(to).classList.add('active');
+            if (to === 'collect') renderZiliudiNewsLists();
+            if (window.XueWuyaVoiceMode) XueWuyaVoiceMode.scheduleRead(200);
+        }
+        function showToast(msg, time=2000) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(()=>t.style.display='none', time);
+        }
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            if(tab === 'study') {
+                tabs[0].classList.add('active');
+                document.getElementById('study-tab').classList.add('active');
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('badge-tab').classList.add('active');
+            }
+            //切换tab也重新朗读本页
+            if (window.XueWuyaVoiceMode) XueWuyaVoiceMode.scheduleRead(200);
+        }
+        function switchCollectTab(tab) {
+            const tabs = document.querySelectorAll('.collect-tab-btn');
+            const contents = document.querySelectorAll('.collect-content');
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+            if(tab === 'collect') {
+                tabs[0].classList.add('active');
+                document.getElementById('collect-tab').classList.add('active');
+                document.querySelector('#collect .page-title').innerText = '收藏';
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('history-tab').classList.add('active');
+                document.querySelector('#collect .page-title').innerText = '历史浏览';
+            }
+            renderZiliudiNewsLists();
+            //切换收藏tab重新朗读
+            if (window.XueWuyaVoiceMode) XueWuyaVoiceMode.scheduleRead(200);
+        }
+        function logout(){
+            if (window.XueWuyaVoiceMode) XueWuyaVoiceMode.stopSpeak();
+            if (window.XueWuyaAuth) XueWuyaAuth.clearAuth();
+            showToast('退出登录成功');
+            setTimeout(()=>{
+                window.location.href = 'login.html';
+            },1000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>传家录 - 心情填写</title>
+  <link rel="stylesheet" href="../../css/main.css">
+  <script>window.PAGE_CONFIG = { activeTab: "photo", subForm: "mood" };</script>
+</head>
+<body data-active-module="chuanjia">
+  <div class="phone page--story-create">
+    <div data-include="page-header"></div>
+    <div data-include="back-bar" data-props='{"href":"create.html","label":"返回编辑"}'></div>
+
+    <div class="phone__scroll sub-form-page">
+      <p class="field-label">请填写心情</p>
+      <textarea id="subFormInput" placeholder="请输入心情，如：开心、激动"></textarea>
+      <button type="button" class="btn-primary btn-primary--large" id="subFormSave">保存</button>
+    </div>
+
+    <div data-include="bottom-nav"></div>
+  </div>
+  <script src="../../../js/voice-mode.js"></script>
+    <script src="../../../js/auth.js"></script>
+  <script src="../../../js/nav.js"></script>
+    <script src="../../../js/family-avatars.js"></script>
+  <script src="../../js/app.js"></script>
+  <script src="../../js/interactions.js"></script>
+</body>
+</html>

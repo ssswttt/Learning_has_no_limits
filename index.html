@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>学无涯 - 共学堂</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-active-module="gongxuetang">
+    <div class="app-container">
+        <div id="recommend-groups" class="page active">
+            <header class="header">
+                <div class="tabs">
+                    <span class="tab" id="my-groups-tab">我的群组</span>
+                    <span class="tab active" id="recommend-tab">推荐群组</span>
+                </div>
+            </header>
+            
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <span class="filter-label">兴趣标签</span>
+                    <select class="filter-select">
+                        <option>摄影</option>
+                        <option>书法</option>
+                        <option>茶艺</option>
+                        <option>绘画</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">所在地区</span>
+                    <select class="filter-select">
+                        <option>北京市</option>
+                        <option>上海市</option>
+                        <option>广州市</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="groups-list">
+                <div class="group-card">
+                    <div class="group-header">
+                        <div class="group-icon-wrap">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=camera%20icon%20on%20grass%20landscape&image_size=square" alt="摄影" class="group-icon">
+                            <span class="full-badge">满</span>
+                        </div>
+                        <div class="group-info">
+                            <h3 class="group-name">朝阳公园晨练摄影队</h3>
+                            <p class="group-desc">专注于风光摄影和人像拍摄，每周三周六集体外拍活动，欢迎摄影爱好者加入</p>
+                            <div class="group-tags">
+                                <span class="tag tag-photography">摄影</span>
+                                <span class="tag tag-scenery">风光</span>
+                            </div>
+                            <div class="group-location">朝阳区</div>
+                            <div class="member-info">
+                                <span class="member-count">50/50人</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" data-current="50" data-total="50"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="join-btn disabled">申请候补</button>
+                </div>
+
+                <div class="group-card">
+                    <div class="group-header">
+                        <div class="group-icon-wrap">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese%20calligraphy%20brush%20elegant&image_size=square" alt="书法" class="group-icon">
+                        </div>
+                        <div class="group-info">
+                            <h3 class="group-name">海淀社区书法研习社</h3>
+                            <p class="group-desc">传承中华文华，每日练习楷书行书，定期举办书法展览，诚邀热爱书法的朋友共同举办书法展览，诚邀</p>
+                            <div class="group-tags">
+                                <span class="tag tag-calligraphy">书法</span>
+                                <span class="tag tag-chinese">国学</span>
+                            </div>
+                            <div class="group-location">海淀区</div>
+                            <div class="member-info">
+                                <span class="member-count">24/30人</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" data-current="24" data-total="30"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="join-btn" onclick="navigateToChat('海淀社区书法研习社')">一键加入</button>
+                </div>
+
+                <div class="group-card">
+                    <div class="group-header">
+                        <div class="group-icon-wrap">
+                            <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese%20tea%20ceremony%20set%20elegant&image_size=square" alt="茶艺" class="group-icon">
+                        </div>
+                        <div class="group-info">
+                            <h3 class="group-name">西城茶艺文化沙龙</h3>
+                            <p class="group-desc">品茶论道，分享茶文化知识，每月茶艺讲座，适合喜爱茶文化的朋友们相聚交流。</p>
+                            <div class="group-tags">
+                                <span class="tag tag-tea">茶艺</span>
+                                <span class="tag tag-culture">文化</span>
+                            </div>
+                            <div class="group-location">西城区</div>
+                            <div class="member-info">
+                                <span class="member-count">15/25人</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" data-current="15" data-total="25"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="join-btn" onclick="navigateToChat('西城茶艺文化沙龙')">一键加入</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="my-groups" class="page">
+            <header class="header">
+                <div class="tabs">
+                    <span class="tab active" id="my-groups-tab2">我的群组</span>
+                    <span class="tab" id="recommend-tab2">推荐群组</span>
+                </div>
+            </header>
+
+            <div class="search-bar">
+                <input type="text" placeholder="搜索群组..." class="search-input">
+            </div>
+
+            <div class="my-groups-list">
+                <div class="my-group-item" onclick="navigateToChat('朝阳公园晨练摄影队')">
+                    <div class="my-group-icon">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=camera%20icon%20on%20grass%20landscape&image_size=square" alt="摄影">
+                    </div>
+                    <div class="my-group-info">
+                        <h4 class="my-group-name">朝阳公园晨练摄影队</h4>
+                        <p class="my-group-last">要一起去公园跑步摄影</p>
+                    </div>
+                    <div class="my-group-time">15:23</div>
+                </div>
+
+                <div class="my-group-item" onclick="navigateToChat('海淀书法研习社')">
+                    <div class="my-group-icon">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese%20calligraphy%20brush&image_size=square" alt="书法">
+                    </div>
+                    <div class="my-group-info">
+                        <h4 class="my-group-name">海淀书法研习社</h4>
+                        <p class="my-group-last">有没有人一起练书法</p>
+                    </div>
+                    <div class="my-group-time">9:20</div>
+                </div>
+
+                <div class="my-group-item" onclick="navigateToChat('茶艺文化沙龙')">
+                    <div class="my-group-icon">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese%20tea%20ceremony&image_size=square" alt="茶艺">
+                    </div>
+                    <div class="my-group-info">
+                        <h4 class="my-group-name">茶艺文化沙龙</h4>
+                        <p class="my-group-last">有没有人一起练书法书法</p>
+                    </div>
+                    <div class="my-group-time">周四</div>
+                </div>
+
+                <div class="my-group-item" onclick="navigateToChat('广场舞爱好者联盟')">
+                    <div class="my-group-icon">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese%20square%20dance%20people%20happy&image_size=square" alt="广场舞">
+                    </div>
+                    <div class="my-group-info">
+                        <h4 class="my-group-name">广场舞爱好者联盟</h4>
+                        <p class="my-group-last">明天早上公园一起跳舞</p>
+                    </div>
+                    <div class="my-group-time">周三</div>
+                </div>
+
+                <div class="my-group-item" onclick="navigateToChat('太极养生班')">
+                    <div class="my-group-icon">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=taichi%20exercise%20chinese%20martial%20art&image_size=square" alt="太极">
+                    </div>
+                    <div class="my-group-info">
+                        <h4 class="my-group-name">太极养生班</h4>
+                        <p class="my-group-last">周末一起练习太极</p>
+                    </div>
+                    <div class="my-group-time">周二</div>
+                </div>
+
+                <div class="my-group-item" onclick="navigateToChat('诗词朗诵团')">
+                    <div class="my-group-icon">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese%20poetry%20reading%20traditional&image_size=square" alt="诗词">
+                    </div>
+                    <div class="my-group-info">
+                        <h4 class="my-group-name">诗词朗诵团</h4>
+                        <p class="my-group-last">下周举办诗词分享会</p>
+                    </div>
+                    <div class="my-group-time">周一</div>
+                </div>
+            </div>
+
+            <button class="create-btn" onclick="navigateToCreate()">+</button>
+        </div>
+
+        <div id="create-group" class="page">
+            <header class="header">
+                <button class="back-btn" onclick="goBack()">←</button>
+                <h1 class="page-title">创建群组</h1>
+                <div class="header-placeholder"></div>
+            </header>
+
+            <div class="create-content">
+                <div class="role-tabs">
+                    <button class="role-tab active">我自己创建</button>
+                    <button class="role-tab">帮父母创建</button>
+                </div>
+
+                <div class="upload-area">
+                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=upload%20icon%20camera%20simple&image_size=square" alt="上传" class="upload-icon">
+                    <p>点击上传封面</p>
+                    <p class="optional">(可选)</p>
+                </div>
+
+                <div class="form-item">
+                    <label class="form-label">群名称</label>
+                    <input type="text" class="form-input" name="group-name" placeholder="请输入群名称(2-20字)">
+                </div>
+
+                <div class="form-item">
+                    <label class="form-label">群简介</label>
+                    <textarea class="form-textarea" placeholder="请输入群简介(≤100字)"></textarea>
+                    <div class="word-count">0/100</div>
+                </div>
+
+                <div class="form-item">
+                    <label class="form-label">所在城市</label>
+                    <div class="city-select">
+                        <span>北京市 - 海淀区</span>
+                        <span class="arrow">›</span>
+                    </div>
+                </div>
+
+                <div class="form-item">
+                    <label class="form-label">兴趣分类</label>
+                    <div class="category-grid">
+                        <span class="category-tag">书法</span>
+                        <span class="category-tag active">绘画</span>
+                        <span class="category-tag">摄影</span>
+                        <span class="category-tag">音乐</span>
+                        <span class="category-tag">舞蹈</span>
+                        <span class="category-tag">太极</span>
+                        <span class="category-tag">养生</span>
+                        <span class="category-tag">读书</span>
+                    </div>
+                </div>
+
+                <div class="form-item">
+                    <label class="form-label">入群方式</label>
+                    <div class="join-methods">
+                        <div class="join-method active">
+                            <span class="method-icon">🔓</span>
+                            <span class="method-text">无需审核，直接加入</span>
+                            <span class="method-check">✓</span>
+                        </div>
+                        <div class="join-method">
+                            <span class="method-icon">🔒</span>
+                            <span class="method-text">需群主审核</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-item">
+                    <label class="form-label">人数上限</label>
+                    <div class="slider-container">
+                        <div class="slider-labels">
+                            <span>最少30人</span>
+                            <span class="slider-value">50人</span>
+                            <span>最多200人</span>
+                        </div>
+                        <input type="range" class="people-slider" min="30" max="200" value="50">
+                        <div class="slider-ticks">
+                            <span style="left: 0%">30</span>
+                            <span style="left: 11.76%">50</span>
+                            <span style="left: 41.18%">100</span>
+                            <span style="left: 70.59%">150</span>
+                            <span style="left: 100%">200</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="submit-btn" onclick="createGroup()">立即创建</button>
+                <p class="create-tip">您还可创建2个群组</p>
+            </div>
+        </div>
+
+        <div id="chat-room" class="page">
+            <header class="header">
+                <button class="back-btn" onclick="goBack()">←</button>
+                <div class="chat-header">
+                    <h1 class="page-title" id="chat-title">晨练摄影队</h1>
+                </div>
+                <div class="header-right">
+                    <button class="header-btn" onclick="navigateToWorks()">📷</button>
+                    <button class="header-btn" onclick="navigateToSettings()">⚙️</button>
+                </div>
+            </header>
+
+            <div class="welcome-banner">
+                <span class="welcome-icon">🌿</span>
+                <span>欢迎加入共学堂交流群！</span>
+                <button class="welcome-link">查看详情</button>
+            </div>
+
+            <div class="chat-messages">
+                <div class="message received">
+                    <div class="message-avatar">👵</div>
+                    <div class="message-content">
+                        <div class="message-name">张阿姨</div>
+                        <div class="message-text">大家好啊！今天天气真不错，适合出来走走。</div>
+                        <div class="message-time">下午2:30</div>
+                    </div>
+                </div>
+
+                <div class="message sent">
+                    <div class="message-content">
+                        <div class="message-name">李叔叔</div>
+                        <div class="message-text">是啊！公园里的花开得可漂亮了。</div>
+                    </div>
+                    <div class="message-avatar">👴</div>
+                </div>
+
+                <div class="message received">
+                    <div class="message-avatar">👵</div>
+                    <div class="message-content">
+                        <div class="message-name">张阿姨</div>
+                        <div class="voice-message">
+                            <div class="voice-wave"></div>
+                            <span class="voice-duration">15"</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="message sent">
+                    <div class="message-content">
+                        <div class="message-name">李叔叔</div>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=beautiful%20flowers%20garden%20spring&image_size=landscape_4_3" alt="图片" class="message-image">
+                    </div>
+                    <div class="message-avatar">👴</div>
+                </div>
+
+                <div class="message received">
+                    <div class="message-avatar">👴</div>
+                    <div class="message-content">
+                        <div class="message-name">王叔叔</div>
+                        <div class="message-text">@李叔叔 明天早上一起去锻炼身体吧！</div>
+                    </div>
+                </div>
+
+                <div class="message sent error">
+                    <div class="message-content">
+                        <div class="message-name">李叔叔</div>
+                        <div class="message-text error-text">网络不佳，消息发送失败</div>
+                    </div>
+                    <div class="message-avatar">👴</div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <button class="input-btn">🎤</button>
+                <button class="input-btn">+</button>
+                <input type="text" class="chat-input" id="chat-input" placeholder="说点什么...">
+                <button class="send-btn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+
+        <div id="works-wall" class="page">
+            <header class="header">
+                <button class="back-btn" onclick="goBack()">←</button>
+                <h1 class="page-title">作品墙</h1>
+                <div class="header-placeholder"></div>
+            </header>
+
+            <div class="works-list">
+                <div class="work-card">
+                    <div class="work-header">
+                        <div class="work-avatar">👩‍🏫</div>
+                        <div class="work-info">
+                            <div class="work-author">张老师</div>
+                            <div class="work-time">2小时前</div>
+                        </div>
+                    </div>
+                    <p class="work-desc">这是我画的水彩画，描绘了春天花园里盛开的花朵</p>
+                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=watercolor%20painting%20beautiful%20flowers%20garden%20spring&image_size=square" alt="作品" class="work-image">
+                    <div class="work-actions">
+                        <button class="action-btn like-btn" data-liked="false">🤍 12</button>
+                        <div class="work-actions-right">
+                            <button class="action-btn preset-btn good-btn" data-comment="做的真好">做的真好</button>
+                            <button class="action-btn preset-btn" data-comment="继续加油">继续加油</button>
+                            <button class="action-btn comment-btn">💬 评论</button>
+                        </div>
+                    </div>
+                    <div class="work-comments">
+                        <p><span class="comment-author">王阿姨：</span>做的真好</p>
+                        <p><span class="comment-author">王阿姨：</span>色彩丰富，充满生机。</p>
+                        <p><span class="comment-author">张阿姨：</span>色彩丰富，充满生机。</p>
+                    </div>
+                    <div class="comment-input-wrap" style="display: none;">
+                        <input type="text" class="comment-input" placeholder="输入评论...">
+                        <button class="send-comment-btn">发送</button>
+                    </div>
+                </div>
+
+                <div class="work-card">
+                    <div class="work-header">
+                        <div class="work-avatar">👵</div>
+                        <div class="work-info">
+                            <div class="work-author">李阿姨</div>
+                            <div class="work-time">昨天</div>
+                        </div>
+                    </div>
+                    <p class="work-desc">这是我写的毛笔字，大家觉得怎么样</p>
+                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese%20calligraphy%20beautiful%20brush%20writing&image_size=square" alt="作品" class="work-image">
+                    <div class="work-actions">
+                        <button class="action-btn like-btn" data-liked="false">🤍 25</button>
+                        <div class="work-actions-right">
+                            <button class="action-btn preset-btn good-btn" data-comment="做的真好">做的真好</button>
+                            <button class="action-btn preset-btn" data-comment="继续加油">继续加油</button>
+                            <button class="action-btn comment-btn">💬 评论</button>
+                        </div>
+                    </div>
+                    <div class="work-comments">
+                        <p><span class="comment-author">王叔叔：</span>继续加油</p>
+                        <p><span class="comment-author">张阿姨：</span>笔力道劲，意境深远。</p>
+                    </div>
+                    <div class="comment-input-wrap" style="display: none;">
+                        <input type="text" class="comment-input" placeholder="输入评论...">
+                        <button class="send-comment-btn">发送</button>
+                    </div>
+                </div>
+
+                <div class="work-card">
+                    <div class="work-header">
+                        <div class="work-avatar">👨‍🏫</div>
+                        <div class="work-info">
+                            <div class="work-author">陈老师</div>
+                            <div class="work-time">4天前</div>
+                        </div>
+                    </div>
+                    <p class="work-desc">夕阳下的山湖美景</p>
+                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=beautiful%20sunset%20lake%20mountains%20scenery&image_size=landscape_4_3" alt="作品" class="work-image">
+                    <div class="work-actions">
+                        <button class="action-btn like-btn" data-liked="false">🤍 25</button>
+                        <div class="work-actions-right">
+                            <button class="action-btn preset-btn good-btn" data-comment="做的真好">做的真好</button>
+                            <button class="action-btn preset-btn" data-comment="继续加油">继续加油</button>
+                            <button class="action-btn comment-btn">💬 评论</button>
+                        </div>
+                    </div>
+                    <div class="work-comments">
+                        <p><span class="comment-author">王叔叔：</span>色彩搭配和谐，层次分明。</p>
+                        <p><span class="comment-author">张阿姨：</span>做的真好</p>
+                    </div>
+                    <div class="comment-input-wrap" style="display: none;">
+                        <input type="text" class="comment-input" placeholder="输入评论...">
+                        <button class="send-comment-btn">发送</button>
+                    </div>
+                </div>
+            </div>
+
+            <p class="load-more">上拉加载更多作品</p>
+
+            <button class="create-btn" onclick="navigateToPublish()">+</button>
+        </div>
+
+        <div id="publish-work" class="page">
+            <header class="header">
+                <button class="back-btn" onclick="goBack()">←</button>
+                <h1 class="page-title">发布作品</h1>
+                <div class="header-placeholder"></div>
+            </header>
+
+            <div class="publish-content">
+                <textarea class="publish-textarea" placeholder="随手说出你此刻的感想……"></textarea>
+                
+                <div class="upload-images">
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                </div>
+                <p class="upload-hint">（最多添加9张图片，长按可删除）</p>
+
+                <button class="submit-btn">发布</button>
+            </div>
+        </div>
+
+        <div id="group-settings" class="page">
+            <header class="header">
+                <button class="back-btn" onclick="goBack()">←</button>
+                <h1 class="page-title">管理</h1>
+                <div class="header-placeholder"></div>
+            </header>
+
+            <div class="settings-content">
+                <div class="member-grid">
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20smiling&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20happy&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20kind&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20gentle&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20warm&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20friendly&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=abstract%20colorful%20art&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=landscape%20mountain%20scenery&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=blue%20ocean%20waves&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=night%20sky%20stars&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=forest%20trees%20nature&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                    <div class="member-item">
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=city%20night%20lights&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
+                    </div>
+                </div>
+                <button class="more-members">更多群成员 ▼</button>
+
+                <div class="settings-list">
+                    <div class="settings-item">
+                        <span class="settings-label">群聊名称</span>
+                        <span class="settings-value">晨练摄影队</span>
+                        <span class="settings-arrow">›</span>
+                    </div>
+                    <div class="settings-item">
+                        <span class="settings-label">群二维码</span>
+                        <span class="settings-qrcode">📱</span>
+                        <span class="settings-arrow">›</span>
+                    </div>
+                    <div class="settings-item">
+                        <span class="settings-label">群聊公告</span>
+                        <span class="settings-value">欢迎加入共学堂交流群！</span>
+                        <span class="settings-arrow">›</span>
+                    </div>
+                    <div class="settings-item">
+                        <span class="settings-label">备注</span>
+                        <span class="settings-arrow">›</span>
+                    </div>
+                    <div class="settings-item">
+                        <span class="settings-label">我在群里的昵称</span>
+                        <span class="settings-value">张阿姨</span>
+                        <span class="settings-arrow">›</span>
+                    </div>
+                    <div class="settings-item">
+                        <span class="settings-label">查找聊天记录</span>
+                        <span class="settings-arrow">›</span>
+                    </div>
+                    <div class="settings-item toggle">
+                        <span class="settings-label">消息免打扰</span>
+                        <div class="toggle-switch off"></div>
+                    </div>
+                    <div class="settings-item toggle">
+                        <span class="settings-label">置顶聊天</span>
+                        <div class="toggle-switch on"></div>
+                    </div>
+                </div>
+
+                <button class="exit-btn">退出群聊</button>
+            </div>
+        </div>
+
+        <nav class="bottom-nav global-bottom-nav">
+            <button type="button" class="nav-item" data-nav-module="baixiaotang">
+                <span class="nav-icon">💡</span>
+                <span class="nav-text">百晓堂</span>
+            </button>
+            <button type="button" class="nav-item" data-nav-module="wanhua">
+                <span class="nav-icon">📺</span>
+                <span class="nav-text">万花筒</span>
+            </button>
+            <button type="button" class="nav-item active" data-nav-module="gongxuetang">
+                <span class="nav-icon">🌿</span>
+                <span class="nav-text">共学堂</span>
+            </button>
+            <button type="button" class="nav-item" data-nav-module="chuanjia">
+                <span class="nav-icon">📤</span>
+                <span class="nav-text">传家录</span>
+            </button>
+            <button type="button" class="nav-item" data-nav-module="ziliudi">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-text">自留地</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="js/voice-mode.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.guardGuestInteractions(document.querySelector('.app-container') || document.body);
+            }
+        });
+    </script>
+</body>
+</html>

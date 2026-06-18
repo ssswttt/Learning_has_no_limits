@@ -1,0 +1,17 @@
+<div class="story-create-card">
+  <div class="story-create-header">
+    <div class="story-create-header__title-wrap">
+      <input type="text" class="story-create-header__title-input" id="storyCardTitleInput" placeholder="故事卡标题" maxlength="50">
+      <button type="button" class="story-create-header__edit" id="storyCardTitleEdit" aria-label="编辑标题">✎</button>
+    </div>
+    <div class="story-create-header__actions">
+      <button type="button" class="story-create-header__save" id="storyCardSaveBtn">保存</button>
+      <button type="button" class="story-create-header__export">导出</button>
+    </div>
+  </div>
+  <div class="photo-upload">
+    <div class="photo-upload__icon">📷</div>
+    <span>添加照片</span>
+  </div>
+  {{formRows}}
+</div>

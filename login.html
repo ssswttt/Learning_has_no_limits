@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>登录注册</title>
+    <link rel="stylesheet" href="css/app-shell.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #F5F5F5;
+            min-height: 100vh;
+            width: 100%;
+            max-width: var(--app-max-width, 430px);
+            margin: 0 auto;
+        }
+        .page-title {
+            width: 100%;
+            height: 50px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            position: relative;
+        }
+        .form-card {
+            width: 90%;
+            max-width: 400px;
+            margin: 40px auto 0;
+            background: linear-gradient(to bottom, #E6F9E0, #fff);
+            border-radius: 12px;
+            padding: 24px 16px;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+        }
+        .welcome-title {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 24px;
+        }
+        .form-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 24px;
+        }
+        .input-group {
+            margin-bottom: 16px;
+        }
+        .input-text {
+            width: 100%;
+            height: 46px;
+            border: none;
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 14px;
+            background-color: #fff;
+            color: #333;
+        }
+        .input-text::placeholder {
+            color: #999;
+            font-size: 13px;
+        }
+        .code-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .code-input {
+            flex: 1;
+            height: 46px;
+            border: none;
+            border-radius: 8px;
+            padding: 0 12px;
+            font-size: 14px;
+            background-color: #fff;
+            color: #333;
+        }
+        .send-btn {
+            width: 100px;
+            height: 46px;
+            background-color: #60C692;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .send-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .agreement-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .agreement-checkbox {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        .agreement-text {
+            font-size: 12px;
+            color: #666;
+        }
+        .agreement-link {
+            color: #60C692;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .submit-btn {
+            width: 100%;
+            height: 46px;
+            background-color: #60C692;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .guest-btn {
+            width: 100%;
+            height: 46px;
+            background-color: #fff;
+            color: #60C692;
+            border: 1px solid #60C692;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+        .other-login {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .other-login a {
+            color: #60C692;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .register-tip {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+        .register-tip a {
+            color: #60C692;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            z-index: 999;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast"></div>
+
+    <!-- 1. 手机号验证码登录 -->
+    <div class="page active" id="login-sms">
+        <div class="page-title">手机号验证码登录</div>
+        <div class="form-card">
+            <h2 class="welcome-title">欢迎回来</h2>
+            <div class="input-group">
+                <input type="text" class="input-text" id="phone" placeholder="请输入手机号/邮箱">
+            </div>
+            <div class="code-group">
+                <input type="text" class="code-input" id="code" placeholder="验证码">
+                <button class="send-btn" id="sendCodeBtn" onclick="sendCode()">发送验证码</button>
+            </div>
+            <div class="agreement-group">
+                <input type="checkbox" class="agreement-checkbox" id="agree1">
+                <label for="agree1" class="agreement-text">
+                    我已阅读并同意<a href="#" class="agreement-link">《服务协议》</a>和<a href="#" class="agreement-link">《隐私协议》</a>
+                </label>
+            </div>
+            <button class="submit-btn" onclick="loginBySms()">开始使用</button>
+            <button class="guest-btn" type="button" onclick="loginAsGuest()">游客登录</button>
+            <div class="other-login">
+                <a onclick="switchPage('login-sms','login-pwd')">账号密码登录</a>
+            </div>
+            <div class="register-tip">
+                还没有账号？<a onclick="switchPage('login-sms','register')">前往注册</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 账号密码登录 -->
+    <div class="page" id="login-pwd">
+        <div class="page-title">账号密码登录</div>
+        <div class="form-card">
+            <h2 class="welcome-title">欢迎回来</h2>
+            <div class="input-group">
+                <input type="text" class="input-text" id="userid" placeholder="请输入用户id">
+            </div>
+            <div class="input-group">
+                <input type="password" class="input-text" id="pwd" placeholder="请输入密码">
+            </div>
+            <div class="agreement-group">
+                <input type="checkbox" class="agreement-checkbox" id="agree2">
+                <label for="agree2" class="agreement-text">
+                    我已阅读并同意<a href="#" class="agreement-link">《服务协议》</a>和<a href="#" class="agreement-link">《隐私协议》</a>
+                </label>
+            </div>
+            <button class="submit-btn" onclick="loginByPwd()">开始使用</button>
+            <button class="guest-btn" type="button" onclick="loginAsGuest()">游客登录</button>
+            <div class="other-login">
+                <a onclick="switchPage('login-pwd','login-sms')">忘记密码</a>
+            </div>
+            <div class="register-tip">
+                还没有账号？<a onclick="switchPage('login-pwd','register')">前往注册</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 用户注册 -->
+    <div class="page" id="register">
+        <div class="page-title">用户注册</div>
+        <div class="form-card">
+            <span class="close-btn" onclick="switchPage('register','login-sms')">×</span>
+            <h2 class="form-title">注册新账号</h2>
+            <div class="input-group">
+                <input type="text" class="input-text" id="reg_phone" placeholder="请输入手机号">
+            </div>
+            <div class="input-group">
+                <input type="text" class="input-text" placeholder="请输入邮箱">
+            </div>
+            <div class="input-group">
+                <input type="password" class="input-text" id="reg_pwd1" placeholder="请输入密码">
+            </div>
+            <div class="input-group">
+                <input type="password" class="input-text" id="reg_pwd2" placeholder="请确认密码">
+            </div>
+            <div class="code-group">
+                <input type="text" class="code-input" id="reg_code" placeholder="验证码">
+                <button class="send-btn" id="regSendBtn" onclick="regSendCode()">发送验证码</button>
+            </div>
+            <div class="agreement-group">
+                <input type="checkbox" class="agreement-checkbox" id="agree3">
+                <label for="agree3" class="agreement-text">
+                    我已阅读并同意<a href="#" class="agreement-link">《服务协议》</a>和<a href="#" class="agreement-link">《隐私协议》</a>
+                </label>
+            </div>
+            <button class="submit-btn" onclick="doRegister()">注册</button>
+            <div class="register-tip">
+                已有账号？<a onclick="switchPage('register','login-pwd')">前往登录</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const correctCode = '123456';
+        const defaultUserId = '123456';
+        const defaultPwd = '123456';
+        let countdown = 0;
+        let timer = null;
+
+        function getRegisteredPhones() {
+            const phones = localStorage.getItem('registeredPhones');
+            return phones ? JSON.parse(phones) : [];
+        }
+        function saveRegisteredPhone(phone) {
+            const phones = getRegisteredPhones();
+            if (!phones.includes(phone)) {
+                phones.push(phone);
+                localStorage.setItem('registeredPhones', JSON.stringify(phones));
+            }
+        }
+        function switchPage(from, to) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(to).classList.add('active');
+            resetAll();
+        }
+        function showToast(msg, time=2000) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.display = 'block';
+            setTimeout(()=>t.style.display='none', time);
+        }
+        function resetAll() {
+            clearInterval(timer);
+            countdown = 0;
+            const btn1 = document.getElementById('sendCodeBtn');
+            const btn2 = document.getElementById('regSendBtn');
+            if(btn1) { btn1.innerText='发送验证码'; btn1.disabled=false; }
+            if(btn2) { btn2.innerText='发送验证码'; btn2.disabled=false; }
+        }
+        function startCount(btnId) {
+            const btn = document.getElementById(btnId);
+            countdown = 60;
+            btn.disabled = true;
+            btn.innerText = countdown+'s';
+            timer = setInterval(()=>{
+                countdown--;
+                if(countdown<=0) {
+                    clearInterval(timer);
+                    btn.innerText = '发送验证码';
+                    btn.disabled = false;
+                } else {
+                    btn.innerText = countdown+'s';
+                }
+            },1000);
+        }
+
+        function sendCode() {
+            const phone = document.getElementById('phone').value.trim();
+            if(!phone) {
+                showToast('请输入手机号/邮箱');
+                return;
+            }
+            const regList = getRegisteredPhones();
+            if(!regList.includes(phone)){
+                showToast('该账号未注册，请先注册');
+                return;
+            }
+            startCount('sendCodeBtn');
+        }
+
+        function regSendCode() {
+            startCount('regSendBtn');
+        }
+        function loginBySms() {
+            const phone = document.getElementById('phone').value.trim();
+            const code = document.getElementById('code').value.trim();
+            const agree = document.getElementById('agree1').checked;
+            const registeredPhones = getRegisteredPhones();
+            if(!agree) { showToast('请先阅读并同意协议'); return; }
+            if(!registeredPhones.includes(phone)) {
+                showToast('手机号未注册，3秒后跳转到注册',3000);
+                setTimeout(()=>switchPage('login-sms','register'),3000);
+                return;
+            }
+            if(code !== correctCode) { showToast('验证码错误，请重新输入'); return; }
+            if (window.XueWuyaAuth) XueWuyaAuth.setUser();
+            showToast('登录成功');
+            setTimeout(()=>{
+                window.location.href = 'home.html';
+            },1000);
+        }
+        function loginByPwd() {
+            const id = document.getElementById('userid').value.trim();
+            const pwd = document.getElementById('pwd').value.trim();
+            const agree = document.getElementById('agree2').checked;
+            if(!agree) { showToast('请先阅读并同意协议'); return; }
+            if(id !== defaultUserId) { showToast('用户ID不存在'); return; }
+            if(pwd !== defaultPwd) { showToast('密码错误'); return; }
+            if (window.XueWuyaAuth) XueWuyaAuth.setUser();
+            showToast('登录成功');
+            setTimeout(()=>{
+                window.location.href = 'home.html';
+            },1000);
+        }
+        function doRegister() {
+            const phone = document.getElementById('reg_phone').value.trim();
+            const pwd1 = document.getElementById('reg_pwd1').value.trim();
+            const pwd2 = document.getElementById('reg_pwd2').value.trim();
+            const code = document.getElementById('reg_code').value.trim();
+            const agree = document.getElementById('agree3').checked;
+            const registeredPhones = getRegisteredPhones();
+            if(!agree) { showToast('请先阅读并同意协议'); return; }
+            if(code !== correctCode) { showToast('验证码错误，请重新输入'); return; }
+            if(pwd1 !== pwd2) { showToast('两次输入密码不一致'); return; }
+            if(!pwd1 || !pwd2) { showToast('密码不能为空'); return; }
+            if(registeredPhones.includes(phone)) { showToast('该手机号已被注册，请直接登录'); return; }
+            saveRegisteredPhone(phone);
+            showToast('注册成功，即将返回登录',2000);
+            setTimeout(()=>switchPage('register','login-sms'),2000);
+        }
+        function loginAsGuest() {
+            if (window.XueWuyaAuth) XueWuyaAuth.setGuest();
+            showToast('已进入游客模式');
+            setTimeout(function() {
+                window.location.href = 'baixiaotang.html';
+            }, 800);
+        }
+    </script>
+    <script src="js/auth.js"></script>
+    <script src="js/elder-mode.js"></script>
+    <script src="js/voice-mode.js"></script>
+</body>
+</html>

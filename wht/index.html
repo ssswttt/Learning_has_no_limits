@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>老年兴趣课堂 - 课程总览</title>
+    <link rel="stylesheet" href="wht-common.css">
+    <style>
+        /* 轮播 - 去掉灰色背景 */
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.4s ease;
+        }
+
+        .carousel-slide {
+            flex: 0 0 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+            cursor: pointer;
+            flex-direction: column;
+            padding: 20px;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        /* 半透明遮罩让文字更清晰 */
+        .carousel-slide::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 0;
+        }
+
+        .carousel-slide * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .carousel-slide .course-name {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .carousel-slide .course-desc {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .carousel-slide .course-price {
+            font-size: 18px;
+            margin-top: 6px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 16px;
+            border-radius: 20px;
+        }
+
+        .carousel-indicators {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .carousel-indicators span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .carousel-indicators span.active {
+            background: #fff;
+            width: 20px;
+            border-radius: 4px;
+        }
+
+        /* tab 和课程列表 */
+        .tab-bar {
+            display: flex;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 15px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-item.active {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        .course-list {
+            padding: 12px;
+        }
+
+        .course-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .course-card:active {
+            transform: scale(0.98);
+        }
+
+        /* 课程卡片图片 - 去掉灰色背景 */
+        .course-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .course-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .course-desc {
+            font-size: 12px;
+            color: #999;
+            margin: 4px 0;
+        }
+
+        .course-price {
+            font-size: 18px;
+            color: #4CAF50;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #999;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body data-active-module="wanhua">
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="top-nav-item active">课程总览</div>
+        <div class="top-nav-item" onclick="whtGoStudyCenter()">学习中心</div>
+        <div class="top-nav-item" onclick="whtGoUserWall()">作品墙</div>
+        <div class="top-nav-item" onclick="whtGoOrders()">我的订单</div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <nav class="global-bottom-nav">
+        <button type="button" class="nav-item" data-nav-module="baixiaotang"><span class="nav-icon">💡</span><span>百晓堂</span></button>
+        <button type="button" class="nav-item active" data-nav-module="wanhua"><span class="nav-icon">📺</span><span>万花筒</span></button>
+        <button type="button" class="nav-item" data-nav-module="gongxuetang"><span class="nav-icon">🌿</span><span>共学堂</span></button>
+        <button type="button" class="nav-item" data-nav-module="chuanjia"><span class="nav-icon">📤</span><span>传家录</span></button>
+        <button type="button" class="nav-item" data-nav-module="ziliudi"><span class="nav-icon">🏠</span><span>自留地</span></button>
+    </nav>
+
+    <!-- 轮播 -->
+    <div class="carousel" id="carousel">
+        <div class="carousel-track" id="carouselTrack"></div>
+        <div class="carousel-indicators" id="carouselIndicators"></div>
+    </div>
+
+    <div class="tab-bar">
+        <div class="tab-item active" data-tab="all">老年大学</div>
+        <div class="tab-item" data-tab="my">我的课程</div>
+    </div>
+    <div class="course-list" id="allCourseList"></div>
+    <div class="course-list" id="myCourseList" style="display:none;"></div>
+
+    <script src="../js/wht-storage.js"></script>
+    <script>
+        // 全局数据 — 购课数据通过 XueWuyaWhtStorage 读取（游客不继承登录用户数据）
+        function getPurchasedIds() {
+            return window.XueWuyaWhtStorage ? XueWuyaWhtStorage.getPurchased() : [];
+        }
+        
+        // ✅ 课程数据添加小提琴课（图片用tiqin.jpg）
+        const courses = [
+            { 
+                id: 1, 
+                name: '水彩画入门课10节', 
+                price: 199, 
+                desc: '中老年零基础水彩入门课程',
+                img: 'wwanhuatong/shuifen.jpg'
+            },
+            { 
+                id: 2, 
+                name: '书法基础', 
+                price: 299, 
+                desc: '修身养性，硬笔毛笔同步学习',
+                img: 'wwanhuatong/shufa.jpg'
+            },
+            { 
+                id: 3, 
+                name: '手机摄影', 
+                price: 159, 
+                desc: '日常拍照修图实用教程',
+                img: 'wwanhuatong/sheying.jpg'
+            },
+            { 
+                id: 4, 
+                name: '小提琴入门', 
+                price: 249, 
+                desc: '零基础小提琴入门，轻松学会经典曲目',
+                img: 'wwanhuatong/tiqin.jpg'
+            }
+        ];
+
+        let currentSlide = 0;
+        let slideInterval = null;
+
+        // 跳转到个人作品墙
+        function whtGoUserWall() {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            goToUserWall();
+        }
+        function whtGoStudyCenter() {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            window.location.href = 'study.html';
+        }
+        function whtGoOrders() {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            window.location.href = 'order.html';
+        }
+        function goToUserWall() {
+            localStorage.setItem('gotoStudyPage', 'pageUserWall');
+            window.location.href = 'study.html';
+        }
+
+        // ---------- 轮播 - 现在会显示课程封面图 ----------
+        function renderCarousel() {
+            const track = document.getElementById('carouselTrack');
+            const indicators = document.getElementById('carouselIndicators');
+            const slides = courses.slice(0, 3);
+            
+            track.innerHTML = slides.map(c => `
+                <div class="carousel-slide" data-id="${c.id}" style="background-image: url(${c.img})">
+                    <div class="course-name">${c.name}</div>
+                    <div class="course-desc">${c.desc}</div>
+                    <div class="course-price">¥${c.price}</div>
+                </div>
+            `).join('');
+
+            indicators.innerHTML = slides.map((_, i) =>
+                `<span class="${i === 0 ? 'active' : ''}" data-index="${i}"></span>`
+            ).join('');
+
+            // 轮播点击跳转
+            document.querySelectorAll('.carousel-slide').forEach(el => {
+                el.addEventListener('click', function() {
+                    const id = parseInt(this.dataset.id);
+                    const c = courses.find(item => item.id === id);
+                    if (c) goDetail(c);
+                });
+            });
+
+            // 指示器点击切换
+            document.querySelectorAll('.carousel-indicators span').forEach(dot => {
+                dot.addEventListener('click', function() {
+                    const idx = parseInt(this.dataset.index);
+                    goToSlide(idx);
+                });
+            });
+
+            // 自动播放
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(() => {
+                goToSlide((currentSlide + 1) % slides.length);
+            }, 4000);
+        }
+
+        function goToSlide(index) {
+            const slides = document.querySelectorAll('.carousel-slide');
+            if (!slides.length) return;
+            
+            const track = document.getElementById('carouselTrack');
+            currentSlide = index;
+            track.style.transform = `translateX(-${index * 100}%)`;
+            
+            // 更新指示器
+            document.querySelectorAll('.carousel-indicators span').forEach((dot, i) => {
+                dot.classList.toggle('active', i === index);
+            });
+        }
+
+        // ---------- 课程列表 - 现在会显示课程缩略图 ----------
+        function renderCourses() {
+            const list = document.getElementById('allCourseList');
+            list.innerHTML = courses.map(c => `
+                <div class="course-card" onclick='goDetail(${JSON.stringify(c)})'>
+                    <div class="course-img">
+                        <img src="${c.img}" alt="${c.name}" onerror="this.style.display='none'">
+                    </div>
+                    <div>
+                        <div class="course-name">${c.name}</div>
+                        <div class="course-desc">${c.desc}</div>
+                        <div class="course-price">¥${c.price}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderMyCourse() {
+            const my = getPurchasedIds().map(id => courses.find(c => c.id == id)).filter(Boolean);
+            const box = document.getElementById('myCourseList');
+            
+            if (my.length === 0) {
+                box.innerHTML = '<div class="empty-state">暂无已购课程，前往选购</div>';
+                return;
+            }
+            
+            box.innerHTML = my.map(c => `
+                <div class="course-card" onclick="goStudy('${c.name}')">
+                    <div class="course-img">
+                        <img src="${c.img}" alt="${c.name}" onerror="this.style.display='none'">
+                    </div>
+                    <div>
+                        <div class="course-name">${c.name}</div>
+                        <div style="color:#4CAF50;">点击进入学习</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ---------- 课程详情跳转 ----------
+        function goDetail(c) {
+            localStorage.setItem('currentCourse', JSON.stringify(c));
+            window.location.href = 'detail.html';
+        }
+
+        // ---------- 学习跳转 ----------
+        function goStudy(name) {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            localStorage.setItem('currentStudyCourse', name);
+            window.location.href = 'study.html';
+        }
+
+        // ---------- 首页tab ----------
+        document.querySelectorAll('.tab-item').forEach(tab => {
+            tab.onclick = function() {
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                const type = tab.getAttribute('data-tab');
+                document.getElementById('allCourseList').style.display = type === 'all' ? 'block' : 'none';
+                document.getElementById('myCourseList').style.display = type === 'my' ? 'block' : 'none';
+                
+                if (type === 'my') renderMyCourse();
+            };
+        });
+
+        // ---------- 初始化 ----------
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCourses();
+            renderCarousel();
+        });
+    </script>
+    <script src="../js/voice-mode.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/nav.js"></script>
+</body>
+</html>

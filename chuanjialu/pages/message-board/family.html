@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>传家录 - 家庭成员</title>
+  <link rel="stylesheet" href="../../css/main.css">
+  <script>window.PAGE_CONFIG = { activeTab: "msg" };</script>
+</head>
+<body data-active-module="chuanjia">
+  <div class="phone page--msg-family">
+    <div data-include="page-header"></div>
+
+    <div class="family-page-title family-page-title--with-back">
+      <a class="back-bar back-bar--overlay-title" href="home.html">
+        <span class="back-bar__icon">←</span>
+        <span class="back-bar__text">返回</span>
+      </a>
+      我的家人
+    </div>
+
+    <div class="family-search-bar">
+      <input class="family-search-bar__input" type="text" placeholder="🔍 搜索家人">
+    </div>
+
+    <div class="phone__scroll family-list">
+      <div data-include="family-member-item" data-props='{"avatar":"https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80","name":"妻子","signature":"细水长流，烟火人间"}'></div>
+      <div data-include="family-member-item" data-props='{"avatar":"https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80","name":"女儿","signature":"笑口常开，天天向上"}'></div>
+      <div data-include="family-member-item" data-props='{"avatar":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80","name":"女婿","signature":"踏实肯干，顾家爱家"}'></div>
+      <div data-include="family-member-item" data-props='{"avatar":"https://images.unsplash.com/photo-1557862921-37829c790f19?w=200&q=80","name":"昵称","signature":"陪伴是最长情的告白"}'></div>
+      <div data-include="family-member-item" data-props='{"avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80","name":"昵称","signature":"时光不语，温情常在"}'></div>
+      <div data-include="family-member-item" data-props='{"avatar":"https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&q=80","name":"昵称","signature":"家和万事兴，平安喜乐"}'></div>
+    </div>
+
+    <div data-include="bottom-nav"></div>
+  </div>
+  <script src="../../../js/voice-mode.js"></script>
+    <script src="../../../js/auth.js"></script>
+  <script src="../../../js/nav.js"></script>
+    <script src="../../../js/family-avatars.js"></script>
+  <script src="../../js/app.js"></script>
+  <script src="../../js/interactions.js"></script>
+</body>
+</html>

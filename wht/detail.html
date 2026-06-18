@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>课程详情</title>
+    <link rel="stylesheet" href="wht-common.css">
+    <style>
+        body {
+            padding-bottom: 0;
+        }
+
+        #pageDetail,
+        #pageBuy {
+            padding-bottom: 72px;
+        }
+
+        /* 头部 */
+        .header {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        .back-btn {
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .header-title {
+            font-size: 17px;
+            color: #4CAF50;
+            font-weight: 500;
+        }
+
+        /* 课程详情 */
+        .detail-banner {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .detail-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block !important; /* 强制显示 */
+        }
+
+        .detail-info, .detail-desc, .teacher-card {
+            background: #fff;
+            margin: 8px 12px;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .detail-title {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .detail-price {
+            font-size: 22px;
+            color: #f44336;
+            font-weight: bold;
+        }
+
+        .tag {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 6px;
+        }
+
+        .tag.hot {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        /* 老师头像 */
+        .teacher-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .teacher-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* 底部报名栏 */
+        .detail-bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: var(--app-max-width, 430px);
+            background: #fff;
+            padding: 12px 16px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0));
+            display: flex;
+            gap: 12px;
+            border-top: 1px solid #eee;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .detail-btn.green {
+            flex: 1;
+            padding: 12px;
+            border-radius: 30px;
+            border: none;
+            font-size: 16px;
+            background: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .detail-btn.green.enrolled,
+        .pay-btn.enrolled {
+            background: #e8e8e8;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .pay-btn.enrolled {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+        }
+
+        /* 购买页通用样式 */
+        .address-bar {
+            background: #fff;
+            margin: 12px;
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .order-item-card {
+            background: #fff;
+            margin: 12px;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        /* 通用行样式 */
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .item-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .item-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .item-value {
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-arrow {
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* ✅ 课程信息行 - 强制保留图片位置 */
+        .course-info-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .course-thumb {
+            width: 70px !important;
+            height: 70px !important;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0 !important;
+            background: #f0f0f0; /* 临时灰色占位，图片加载出来会覆盖 */
+        }
+
+        .course-thumb img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            display: block !important;
+        }
+
+        .course-info {
+            flex: 1;
+        }
+
+        .course-name {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .course-price {
+            font-size: 16px;
+            color: #4CAF50;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .course-tag {
+            font-size: 12px;
+            color: #999;
+            border: 1px solid #ddd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* 数量选择 */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quantity-btn {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .quantity-num {
+            font-size: 14px;
+            width: 30px;
+            text-align: center;
+        }
+
+        /* 绿色高亮文字 */
+        .text-green {
+            color: #4CAF50;
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        /* 价格明细 */
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .price-row:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 权益保障 */
+        .rights-bar {
+            background: #fff;
+            margin: 12px;
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .rights-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .rights-desc {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* 底部支付栏 */
+        .total-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%; max-width: var(--app-max-width, 430px);
+            background: #fff;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+        }
+
+        .total-info {
+            line-height: 1.4;
+        }
+
+        .total-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .total-tip {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .pay-btn {
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 12px 36px;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body data-active-module="wanhua">
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="top-nav-item" onclick="window.location.href='index.html'">课程总览</div>
+        <div class="top-nav-item" onclick="whtGoStudyCenter()">学习中心</div>
+        <div class="top-nav-item" onclick="whtGoUserWall()">作品墙</div>
+        <div class="top-nav-item" onclick="whtGoOrders()">我的订单</div>
+    </div>
+
+    <!-- 课程详情页 -->
+    <div id="pageDetail">
+        <div class="header">
+            <div class="back-btn" onclick="window.location.href='index.html'">←</div>
+            <div class="header-title">课程详情</div>
+            <div>···</div>
+        </div>
+        <div class="detail-banner">
+            <img id="courseBanner" src="" alt="课程封面">
+        </div>
+        <div class="detail-info">
+            <div class="detail-title" id="detailTitle"></div>
+            <div style="margin-top:8px;">
+                <span class="tag hot">热门课程</span>
+                <span class="detail-price" id="detailPrice" style="float:right;"></span>
+            </div>
+            <div style="font-size:13px;color:#666; margin-top:8px;">1234人报名 · 好评率98%</div>
+        </div>
+        <div class="detail-desc">
+            <div style="font-weight:500;">课程介绍</div>
+            <div style="font-size:14px;color:#666;margin-top:8px;" id="detailDesc"></div>
+        </div>
+        <div class="teacher-card">
+            <div style="display:flex;gap:12px;align-items:center;">
+                <div class="teacher-avatar">
+                    <img src="wwanhuatong/wanhuatongtouxiang.jpg" alt="李美玲老师">
+                </div>
+                <div><strong>李美玲老师</strong><div style="font-size:12px;color:#666;">30年教龄</div></div>
+            </div>
+        </div>
+        <div class="detail-bottom-bar">
+            <button class="detail-btn green" id="buyNow">立即报名</button>
+        </div>
+    </div>
+
+    <!-- ✅ 购买页面 - 完整HTML结构，包含图片容器 -->
+    <div id="pageBuy" style="display:none;">
+        <div class="header">
+            <div class="back-btn" onclick="showDetail()">←</div>
+            <div class="header-title">购买课程</div>
+            <div>···</div>
+        </div>
+
+        <!-- 收货地址 -->
+        <div class="address-bar">
+            <span>📍</span>
+            <div style="flex:1;">
+                <div>李建国 187****2909</div>
+                <div style="font-size:13px;color:#666;">河南省安阳市广益街道上马墩村751号</div>
+            </div>
+            <span class="item-arrow">></span>
+        </div>
+
+        <!-- ✅ 课程信息 - 这里绝对有图片容器了！ -->
+        <div class="order-item-card">
+            <div style="font-size:14px;color:#666;margin-bottom:12px;">店铺名称</div>
+            <div class="course-info-row">
+                <!-- 图片容器 - 强制存在 -->
+                <div class="course-thumb">
+                    <img id="buyThumb" src="" alt="课程缩略图">
+                </div>
+                <div class="course-info">
+                    <div class="course-name" id="buyName"></div>
+                    <div class="course-price" id="buyPrice"></div>
+                    <div class="course-tag">七天无理由退换</div>
+                </div>
+                <div class="quantity-control">
+                    <button class="quantity-btn">-</button>
+                    <span class="quantity-num">1</span>
+                    <button class="quantity-btn">+</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 课程详情信息 -->
+        <div class="order-item-card">
+            <div class="item-row">
+                <span class="item-label">加入课程时间</span>
+                <span class="item-value">09月19日 13:00 前 <span class="item-arrow">></span></span>
+            </div>
+            <div class="item-row">
+                <span class="item-label">课程联系人</span>
+                <span class="item-value">请选择 <span class="item-arrow">></span></span>
+            </div>
+            <div class="item-row">
+                <span class="item-label">课程开始时间</span>
+                <span class="item-value text-green" id="courseStartDate"></span>
+            </div>
+        </div>
+
+        <!-- 价格明细 -->
+        <div class="order-item-card">
+            <div style="font-size:14px;color:#666;margin-bottom:12px;">价格明细</div>
+            <div class="price-row">
+                <span>商品总价</span>
+                <span id="subTotal"></span>
+            </div>
+            <div class="price-row">
+                <span>材料费</span>
+                <span>¥90 <span class="item-arrow">></span></span>
+            </div>
+            <div class="price-row">
+                <span>优惠券</span>
+                <span>-¥90 <span class="item-arrow">></span></span>
+            </div>
+        </div>
+
+        <!-- 权益保障 -->
+        <div class="rights-bar">
+            <span class="rights-title">权益保障</span>
+            <span class="rights-desc">客服超过24小时未回复将自动退款</span>
+        </div>
+
+        <!-- 底部支付栏 -->
+        <div class="total-bar">
+            <div class="total-info">
+                <div class="total-price">合计：<span id="allPrice"></span></div>
+                <div class="total-tip">含2次线下交流机会</div>
+            </div>
+            <button class="pay-btn" id="payBtn">立即支付</button>
+        </div>
+    </div>
+
+    <script src="wht-toast.js"></script>
+    <script src="../js/wht-storage.js"></script>
+    <script>
+        // 获取当前课程
+        let currCourse = JSON.parse(localStorage.getItem('currentCourse'));
+
+        // 格式化日期
+        function formatDate(dateStr) {
+            if (!dateStr) return '2026年6月20日'; // 强制默认值，不再显示待定
+            const parts = dateStr.split('-');
+            return `${parseInt(parts[1])}月${parseInt(parts[2])}日`;
+        }
+
+        // 跳转到个人作品墙
+        function whtGoUserWall() {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            goToUserWall();
+        }
+        function whtGoStudyCenter() {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            window.location.href = 'study.html';
+        }
+        function whtGoOrders() {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            window.location.href = 'order.html';
+        }
+        function goToUserWall() {
+            localStorage.setItem('gotoStudyPage', 'pageUserWall');
+            window.location.href = 'study.html';
+        }
+
+        // 显示课程详情
+        function showDetail() {
+            document.getElementById('pageDetail').style.display = 'block';
+            document.getElementById('pageBuy').style.display = 'none';
+        }
+
+        // ✅ 显示购买页 - 强制设置图片
+        function showBuy() {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            if (isCoursePurchased()) {
+                showWhtToast('您已报名该课程');
+                setTimeout(function() {
+                    goStudy(currCourse.name);
+                }, 1200);
+                return;
+            }
+
+            document.getElementById('pageDetail').style.display = 'none';
+            document.getElementById('pageBuy').style.display = 'block';
+            
+            document.getElementById('buyName').innerText = currCourse.name;
+            document.getElementById('buyPrice').innerText = '¥' + currCourse.price;
+            document.getElementById('subTotal').innerText = '¥' + currCourse.price + ' >';
+            document.getElementById('allPrice').innerText = '¥' + currCourse.price;
+            
+            const buyThumb = document.getElementById('buyThumb');
+            if (currCourse.img) {
+                buyThumb.src = currCourse.img;
+            } else {
+                buyThumb.src = 'wwanhuatong/shuifen.jpg';
+            }
+            
+            document.getElementById('courseStartDate').innerText = formatDate(currCourse.defaultStartDate);
+        }
+
+        // 是否已购买当前课程
+        function isCoursePurchased() {
+            return currCourse && window.XueWuyaWhtStorage && XueWuyaWhtStorage.isPurchased(currCourse.id);
+        }
+
+        // 更新报名按钮状态
+        function updateEnrollState() {
+            const buyBtn = document.getElementById('buyNow');
+            const payBtn = document.getElementById('payBtn');
+            if (!buyBtn) return;
+
+            if (isCoursePurchased()) {
+                buyBtn.textContent = '已报名';
+                buyBtn.classList.add('enrolled');
+                buyBtn.onclick = function() {
+                    goStudy(currCourse.name);
+                };
+            } else {
+                buyBtn.textContent = '立即报名';
+                buyBtn.classList.remove('enrolled');
+                buyBtn.onclick = showBuy;
+            }
+
+            if (payBtn && isCoursePurchased()) {
+                payBtn.textContent = '已报名';
+                payBtn.classList.add('enrolled');
+                payBtn.onclick = function() {
+                    showWhtToast('您已报名该课程');
+                    setTimeout(function() {
+                        goStudy(currCourse.name);
+                    }, 1200);
+                };
+            }
+        }
+
+        // 初始化课程详情
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!currCourse) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            document.getElementById('detailTitle').innerText = currCourse.name;
+            document.getElementById('detailPrice').innerText = '¥' + currCourse.price;
+            document.getElementById('detailDesc').innerText = currCourse.desc;
+            
+            if (currCourse.img) {
+                document.getElementById('courseBanner').src = currCourse.img;
+            }
+
+            updateEnrollState();
+        });
+
+        // 跳转到课程学习页
+        function goStudy(name) {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            localStorage.setItem('currentStudyCourse', name);
+            window.location.href = 'study.html';
+        }
+
+        // 支付按钮
+        document.getElementById('payBtn').onclick = function() {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            if (isCoursePurchased()) {
+                showWhtToast('您已购买该课程');
+                setTimeout(function() {
+                    goStudy(currCourse.name);
+                }, 1500);
+                return;
+            }
+            
+            XueWuyaWhtStorage.addPurchase(currCourse.id);
+            var orders = XueWuyaWhtStorage.getOrders();
+            orders.unshift({ 
+                courseName: currCourse.name, 
+                price: currCourse.price, 
+                delayDay: '' 
+            });
+            XueWuyaWhtStorage.saveOrders(orders);
+
+            updateEnrollState();
+            
+            showWhtToast('购买成功，正在进入学习');
+            setTimeout(function() {
+                goStudy(currCourse.name);
+            }, 1500);
+        };
+    </script>
+    <script src="../js/voice-mode.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/nav.js"></script>
+</body>
+</html>

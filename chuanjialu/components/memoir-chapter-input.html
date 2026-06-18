@@ -1,0 +1,16 @@
+<div class="memoir-chapter-field" data-memoir-chapter>
+  <div class="chapter-head">
+    <input type="text" class="chapter-head__date-input" data-chapter-date value="{{dateLabel}}" placeholder="如：2020年3月" maxlength="30" aria-label="篇章标题">
+    <button type="button" class="chapter-head__edit" data-action="edit-chapter-title">编辑篇章标题</button>
+  </div>
+  <div class="input-card">
+    <textarea class="input-card__textarea" data-chapter-text placeholder="用简短的一句话描述这个阶段的人生故事……" maxlength="100"></textarea>
+    <div class="input-card__count">0/100字</div>
+    <div class="media-row" data-media-row>
+      <button type="button" class="media-btn media-btn--add" data-action="add-photo">
+        <span class="media-btn__icon">📷</span>添加照片
+      </button>
+    </div>
+    <input type="file" accept="image/*" class="memoir-photo-input" hidden>
+  </div>
+</div>

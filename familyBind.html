@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>家庭绑定与远程协助</title>
+    <link rel="stylesheet" href="css/app-shell.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f5f5;
+            width: 100%;
+            max-width: var(--app-max-width, 430px);
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-bottom: 20px;
+        }
+        .header-bar {
+            height: 52px;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            padding: 0 14px;
+            position: sticky;
+            top:0;
+            z-index:99;
+        }
+        .back-icon {
+            font-size:22px;
+            color:#333;
+            cursor:pointer;
+            width:32px;
+        }
+        .header-title {
+            flex:1;
+            text-align:center;
+            font-size:17px;
+            color:#333;
+            padding-right:32px;
+        }
+        .page-wrap {
+            display:none;
+            padding:16px;
+        }
+        .page-wrap.active {
+            display:block;
+        }
+        .card-box {
+            background:#fff;
+            border-radius:12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding:20px;
+            margin-bottom:16px;
+        }
+        .family-title {
+            font-size:20px;
+            color:#60C692;
+            margin-bottom:18px;
+        }
+        .avatar-row {
+            display:flex;
+            gap:22px;
+        }
+        .avatar-item {
+            text-align:center;
+        }
+        .avatar-circle {
+            width:64px;
+            height:64px;
+            border-radius:50%;
+            overflow:hidden;
+            margin-bottom:6px;
+        }
+        .avatar-circle img {
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        .avatar-name {
+            font-size:14px;
+            color:#333;
+        }
+        .menu-item {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:18px 0;
+            border-bottom:1px solid #eee;
+            font-size:17px;
+            color:#333;
+            cursor:pointer;
+        }
+        .menu-item:last-child {
+            border-bottom:none;
+        }
+        .arrow-right {
+            color:#999;
+            font-size:18px;
+        }
+        .qr-wrap {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            padding:20px 0;
+        }
+        .qr-box {
+            width:200px;
+            height:200px;
+            background:#fff;
+            padding:12px;
+            border-radius:8px;
+            background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect fill="%2360C692" x="15" y="15" width="70" height="70"/><rect fill="white" x="30" y="30" width="40" height="40"/><rect fill="%2360C692" x="115" y="15" width="70" height="70"/><rect fill="white" x="130" y="30" width="40" height="40"/><rect fill="%2360C692" x="15" y="115" width="70" height="70"/><rect fill="white" x="30" y="130" width="40" height="40"/><rect fill="%2360C692" x="115" y="115" width="35" height="35"/><rect fill="%2360C692" x="155" y="115" width="30" height="15"/><rect fill="%2360C692" x="115" y="155" width="15" height="30"/><rect fill="%2360C692" x="135" y="135" width="40" height="40"/></svg>');
+            background-size:100%;
+        }
+        .qr-tip {
+            margin-top:12px;
+            font-size:13px;
+            color:#60C692;
+        }
+        .code-text {
+            font-size:11px;
+            color:#333;
+            word-break:break-all;
+            text-align:center;
+            margin:24px 10px;
+            color:#2b7d53;
+        }
+        .green-btn {
+            width:100%;
+            height:46px;
+            background:#60C692;
+            border:none;
+            border-radius:8px;
+            color:#fff;
+            font-size:15px;
+            cursor:pointer;
+        }
+        .member-item {
+            background:#fff;
+            border-radius:10px;
+            padding:16px;
+            margin-bottom:14px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.07);
+        }
+        .member-top {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            margin-bottom:10px;
+        }
+        .member-info {
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+        .small-avatar {
+            width:36px;
+            height:36px;
+            border-radius:50%;
+            overflow:hidden;
+        }
+        .small-avatar img {
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        .edit-tag {
+            font-size:13px;
+            color:#60C692;
+            cursor:pointer;
+        }
+        .input-wrap {
+            background:#e6f9ef;
+            padding:12px;
+            border-radius:8px;
+            margin:10px 0;
+            display:none;
+        }
+        .input-wrap label {
+            font-size:13px;
+            color:#555;
+            display:block;
+            margin-bottom:6px;
+        }
+        .input-wrap input[type="text"] {
+            width:100%;
+            height:38px;
+            border:none;
+            border-radius:6px;
+            padding:0 10px;
+            outline:none;
+            font-size:14px;
+        }
+        .radio-row {
+            margin:10px 0;
+            font-size:13px;
+        }
+        .radio-row input {
+            margin-right:4px;
+        }
+        .btn-green-sm {
+            width:100%;
+            height:42px;
+            background:#60C692;
+            border:none;
+            color:#fff;
+            border-radius:7px;
+            margin-bottom:8px;
+            cursor:pointer;
+            font-size:15px;
+        }
+        .btn-red-sm {
+            width:100%;
+            height:42px;
+            background:#e85b5b;
+            border:none;
+            color:#fff;
+            border-radius:7px;
+            cursor:pointer;
+            font-size:15px;
+        }
+        .help-item {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            background:#fff;
+            padding:12px 14px;
+            border-radius:10px;
+            margin-bottom:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,0.07);
+        }
+        .help-left {
+            display:flex;
+            align-items:center;
+            gap:10px;
+        }
+        .btn-red-tag {
+            background:#dd4444;
+            color:#fff;
+            padding:6px 12px;
+            border-radius:6px;
+            font-size:13px;
+            cursor:pointer;
+        }
+        .btn-green-tag {
+            background:#60C692;
+            color:#fff;
+            padding:6px 12px;
+            border-radius:6px;
+            font-size:13px;
+            cursor:pointer;
+        }
+        .btn-wait-tag{
+            background:#aaa;
+            color:#fff;
+            padding:6px 12px;
+            border-radius:6px;
+            font-size:13px;
+            cursor:not-allowed;
+        }
+
+        /* 自定义弹窗 */
+        .modal-mask {
+            position: fixed;
+            top:0;left:0;right:0;bottom:0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-box {
+            width: 280px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+        .modal-title {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        .modal-desc {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-btn {
+            flex:1;
+            height: 40px;
+            border-radius: 8px;
+            border:none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .modal-cancel {
+            background: #f2f2f2;
+            color: #666;
+        }
+        .modal-confirm {
+            background: #60C692;
+            color: #fff;
+        }
+        .modal-red {
+            background: #dd4444;
+            color: #fff;
+        }
+
+        /* Toast */
+        #toast {
+            position:fixed;
+            top:50%;
+            left:50%;
+            transform:translate(-50%,-50%);
+            background:rgba(0,0,0,0.7);
+            color:#fff;
+            padding:9px 18px;
+            border-radius:6px;
+            z-index:999;
+            display:none;
+            font-size:13px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 自定义弹窗 -->
+<div class="modal-mask" id="modal">
+    <div class="modal-box">
+        <div class="modal-title" id="modalTitle">提示</div>
+        <div class="modal-desc" id="modalMsg">确定执行该操作吗？</div>
+        <div class="modal-btns">
+            <button class="modal-btn modal-cancel" onclick="closeModal()">取消</button>
+            <button class="modal-btn modal-confirm" id="modalOkBtn">确定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 首页 -->
+<div class="page-wrap active" id="page-home">
+    <div class="header-bar">
+        <span class="back-icon" onclick="window.location.href='home.html'">‹</span>
+        <div class="header-title">家庭绑定与远程协助</div>
+    </div>
+    <div class="card-box">
+        <div class="family-title">我的家人</div>
+        <div class="avatar-row" id="familyAvatarList">
+            <div class="avatar-item" data-index="0">
+                <div class="avatar-circle"><img src="https://picsum.photos/id/103/80/80"></div>
+                <div class="avatar-name">女儿</div>
+            </div>
+            <div class="avatar-item" data-index="1">
+                <div class="avatar-circle"><img src="https://picsum.photos/id/106/80/80"></div>
+                <div class="avatar-name">妻子</div>
+            </div>
+            <div class="avatar-item" data-index="2">
+                <div class="avatar-circle"><img src="https://picsum.photos/id/107/80/80"></div>
+                <div class="avatar-name">女婿</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-box">
+        <div class="menu-item" onclick="switchPage('page-home','page-bind')">
+            <span>绑定家人</span>
+            <span class="arrow-right">›</span>
+        </div>
+        <div class="menu-item" onclick="switchPage('page-home','page-auth')">
+            <span>修改家人权限</span>
+            <span class="arrow-right">›</span>
+        </div>
+        <div class="menu-item" onclick="switchPage('page-home','page-help')">
+            <span>申请远程协助</span>
+            <span class="arrow-right">›</span>
+        </div>
+    </div>
+</div>
+
+<!-- 绑定家人 -->
+<div class="page-wrap" id="page-bind">
+    <div class="header-bar">
+        <span class="back-icon" onclick="switchPage('page-bind','page-home')">‹</span>
+        <div class="header-title">绑定家人</div>
+    </div>
+    <div class="card-box">
+        <div class="qr-wrap">
+            <div class="qr-box"></div>
+            <div class="qr-tip">长按自动保存邀请二维码至相册</div>
+        </div>
+        <div class="code-text">S63RB8SJ27SDFN39JJO1365FASJSDH91HT8XNEOAV<br>H7UJH3NED6YH4627YEHZ</div>
+        <button class="green-btn" onclick="toast('绑定码已复制到剪贴板')">复制绑定码并分享</button>
+    </div>
+</div>
+
+<!-- 修改权限 -->
+<div class="page-wrap" id="page-auth">
+    <div class="header-bar">
+        <span class="back-icon" onclick="switchPage('page-auth','page-home')">‹</span>
+        <div class="header-title">修改家人权限</div>
+    </div>
+    <div style="font-size:12px;color:#666;margin:8px 0;">已绑定的家庭成员</div>
+
+    <div class="member-item" data-index="0">
+        <div class="member-top">
+            <div class="member-info">
+                <div class="small-avatar"><img src="https://picsum.photos/id/103/80/80"></div>
+                <span class="real-name">女儿</span>
+            </div>
+            <span class="edit-tag" onclick="toggleEdit(0)">修改信息</span>
+        </div>
+        <div class="input-wrap" id="edit0">
+            <label>昵称备注</label>
+            <input type="text" value="女儿" id="nick0">
+            <div class="radio-row">
+                <label>权限设置：
+                    <input type="radio" name="auth0" value="see">仅查看
+                    <input type="radio" name="auth0" value="oper">仅查看与操作
+                    <input type="radio" name="auth0" value="all" checked>全权限
+                </label>
+            </div>
+            <button class="btn-green-sm" onclick="saveAuth(0)">保存修改</button>
+            <button class="btn-red-sm" onclick="showUnbindModal(0)">解除绑定</button>
+        </div>
+    </div>
+
+    <div class="member-item" data-index="1">
+        <div class="member-top">
+            <div class="member-info">
+                <div class="small-avatar"><img src="https://picsum.photos/id/106/80/80"></div>
+                <span class="real-name">妻子</span>
+            </div>
+            <span class="edit-tag" onclick="toggleEdit(1)">修改信息</span>
+        </div>
+        <div class="input-wrap" id="edit1">
+            <label>昵称备注</label>
+            <input type="text" value="妻子" id="nick1">
+            <div class="radio-row">
+                <label>权限设置：
+                    <input type="radio" name="auth1" value="see">仅查看
+                    <input type="radio" name="auth1" value="oper">仅查看与操作
+                    <input type="radio" name="auth1" value="all">全权限
+                </label>
+            </div>
+            <button class="btn-green-sm" onclick="saveAuth(1)">保存修改</button>
+            <button class="btn-red-sm" onclick="showUnbindModal(1)">解除绑定</button>
+        </div>
+    </div>
+
+    <div class="member-item" data-index="2">
+        <div class="member-top">
+            <div class="member-info">
+                <div class="small-avatar"><img src="https://picsum.photos/id/107/80/80"></div>
+                <span class="real-name">女婿</span>
+            </div>
+            <span class="edit-tag" onclick="toggleEdit(2)">修改信息</span>
+        </div>
+        <div class="input-wrap" id="edit2">
+            <label>昵称备注</label>
+            <input type="text" value="女婿" id="nick2">
+            <div class="radio-row">
+                <label>权限设置：
+                    <input type="radio" name="auth2" value="see">仅查看
+                    <input type="radio" name="auth2" value="oper">仅查看与操作
+                    <input type="radio" name="auth2" value="all">全权限
+                </label>
+            </div>
+            <button class="btn-green-sm" onclick="saveAuth(2)">保存修改</button>
+            <button class="btn-red-sm" onclick="showUnbindModal(2)">解除绑定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 远程协助 -->
+<div class="page-wrap" id="page-help">
+    <div class="header-bar">
+        <span class="back-icon" onclick="switchPage('page-help','page-home')">‹</span>
+        <div class="header-title">申请远程协助</div>
+    </div>
+    <div class="help-item" data-index="0" data-name="女儿">
+        <div class="help-left">
+            <div class="small-avatar"><img src="https://picsum.photos/id/103/80/80"></div>
+            <span class="real-name">女儿</span>
+        </div>
+        <span class="btn-red-tag" onclick="showStopModal(this,'女儿')">远程控制中</span>
+    </div>
+    <div class="help-item" data-index="1" data-name="妻子">
+        <div class="help-left">
+            <div class="small-avatar"><img src="https://picsum.photos/id/106/80/80"></div>
+            <span class="real-name">妻子</span>
+        </div>
+        <span class="btn-green-tag" onclick="applyHelp(this,'妻子')">申请</span>
+    </div>
+    <div class="help-item" data-index="2" data-name="女婿">
+        <div class="help-left">
+            <div class="small-avatar"><img src="https://picsum.photos/id/107/80/80"></div>
+            <span class="real-name">女婿</span>
+        </div>
+        <span class="btn-green-tag" onclick="applyHelp(this,'女婿')">申请</span>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+let prevPage = 'page-home';
+const familyData = [
+    { name: '女儿', remark: '' },
+    { name: '妻子', remark: '' },
+    { name: '女婿', remark: '' }
+];
+
+let currentUnbindIndex = null;
+let currentStopEle = null;
+let currentStopName = null;
+
+// 页面切换
+function switchPage(fromId, toId) {
+    document.querySelectorAll('.page-wrap').forEach(item => item.classList.remove('active'));
+    document.getElementById(toId).classList.add('active');
+    prevPage = fromId;
+}
+
+// 提示框
+function toast(msg, time = 2000) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', time);
+}
+
+// 展开编辑
+function toggleEdit(idx) {
+    const dom = document.getElementById('edit' + idx);
+    const tag = document.querySelector(`.member-item[data-index="${idx}"] .edit-tag`);
+    
+    if (dom.style.display === 'none' || dom.style.display === '') {
+        dom.style.display = 'block';
+        tag.innerText = '修改中……';
+        toast('已打开编辑');
+    } else {
+        dom.style.display = 'none';
+        tag.innerText = '修改信息';
+        toast('收起编辑');
+    }
+}
+
+// 保存备注
+function saveAuth(idx) {
+    let nick = document.getElementById('nick' + idx).value.trim();
+    familyData[idx].remark = nick;
+
+    document.querySelectorAll(`[data-index="${idx}"] .real-name`).forEach(el => {
+        el.innerText = familyData[idx].name + (nick ? `(${nick})` : '');
+    });
+    document.querySelectorAll(`[data-index="${idx}"] .avatar-name`).forEach(el => {
+        el.innerText = familyData[idx].name + (nick ? `(${nick})` : '');
+    });
+
+    document.getElementById('edit' + idx).style.display = 'none';
+    document.querySelector(`.member-item[data-index="${idx}"] .edit-tag`).innerText = '修改信息';
+    toast('保存成功');
+}
+
+// ------------------------------
+// 弹窗系统
+// ------------------------------
+function showModal(title, msg, okText = "确定", isRed = false) {
+    document.getElementById('modalTitle').innerText = title;
+    document.getElementById('modalMsg').innerText = msg;
+    const okBtn = document.getElementById('modalOkBtn');
+    okBtn.innerText = okText;
+    if (isRed) {
+        okBtn.className = "modal-btn modal-red";
+    } else {
+        okBtn.className = "modal-btn modal-confirm";
+    }
+    document.getElementById('modal').style.display = "flex";
+}
+function closeModal() {
+    document.getElementById('modal').style.display = "none";
+}
+
+// 解除绑定弹窗
+function showUnbindModal(idx) {
+    currentUnbindIndex = idx;
+    showModal("解除绑定", "确定要解除该家人绑定吗？", "确认解除", true);
+    document.getElementById('modalOkBtn').onclick = function() {
+        closeModal();
+        document.querySelectorAll(`[data-index="${currentUnbindIndex}"]`).forEach(el => el.remove());
+        toast("已解除绑定");
+    }
+}
+
+// 中断远程弹窗
+function showStopModal(ele, name) {
+    currentStopEle = ele;
+    currentStopName = name;
+    showModal("中断远程", `是否中断与${name}的远程控制？`, "确认中断", true);
+    document.getElementById('modalOkBtn').onclick = function() {
+        closeModal();
+        currentStopEle.className = "btn-green-tag";
+        currentStopEle.innerText = "申请";
+        currentStopEle.onclick = function(){applyHelp(currentStopEle,currentStopName)};
+        toast(`已中断${currentStopName}远程连接`);
+    }
+}
+
+// 申请远程
+function applyHelp(ele,name) {
+    ele.className = "btn-wait-tag";
+    ele.innerText = "等待中...";
+    ele.onclick = null;
+    toast(`已向${name}发送申请，等待对方接通`);
+    
+    setTimeout(()=>{
+        ele.className = "btn-red-tag";
+        ele.innerText = "远程控制中";
+        ele.onclick = function(){showStopModal(ele,name)};
+        toast(`${name}已接通，远程控制开启`);
+    },3000)
+}
+</script>
+<script src="js/elder-mode.js"></script>
+<script src="js/voice-mode.js"></script>
+</body>
+</html>

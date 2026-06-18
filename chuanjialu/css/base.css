@@ -1,0 +1,58 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #F5F5F5;
+  min-height: 100vh;
+  width: 100%;
+  max-width: var(--phone-width);
+  margin: 0 auto;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+img { display: block; max-width: 100%; }
+
+.phone {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.phone__scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background: transparent;
+  padding-bottom: var(--app-bottom-nav-height, var(--bottom-nav-height));
+}
+
+.phone__scroll::-webkit-scrollbar { width: 0; }
+
+.phone__content { padding: 0 var(--spacing-page) 16px; }
+
+/* 底部导航占位容器：不参与 flex 高度计算（导航本身 fixed） */
+.phone > [data-include="bottom-nav"] {
+  flex: 0 0 0;
+  height: 0;
+  overflow: visible;
+}
+
+/* 页面背景：除顶栏外整页统一为清新绿色 */
+.phone[class*="page--"] {
+  background: var(--gradient-page);
+}

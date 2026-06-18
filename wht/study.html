@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>学习中心</title>
+    <link rel="stylesheet" href="wht-common.css">
+    <style>
+        /* 页面容器 */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* 头部 */
+        .header {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 44px;
+            z-index: 99;
+        }
+
+        .back-btn {
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .header-title {
+            font-size: 17px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #999;
+            font-size: 15px;
+        }
+
+        /* 视频封面 */
+        .video {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .video img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .section {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f7f7f7;
+        }
+
+        .section-title-text {
+            font-weight: 600;
+            font-size: 15px;
+            color: #333;
+        }
+
+        .chapter-list {
+            padding: 8px 12px 16px;
+        }
+
+        .chapter-block {
+            background: #fff;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .chapter-header {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            cursor: pointer;
+            user-select: none;
+            gap: 8px;
+        }
+
+        .chapter-header:active {
+            background: #fafafa;
+        }
+
+        .chapter-index {
+            font-size: 14px;
+            color: #4CAF50;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .chapter-title {
+            flex: 1;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chapter-meta {
+            font-size: 12px;
+            color: #999;
+            flex-shrink: 0;
+        }
+
+        .chapter-arrow {
+            font-size: 11px;
+            color: #999;
+            transition: transform 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .chapter-block.expanded .chapter-arrow {
+            transform: rotate(180deg);
+        }
+
+        .chapter-lessons {
+            display: none;
+            padding: 4px 12px 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .chapter-block.expanded .chapter-lessons {
+            display: block;
+        }
+
+        .lesson {
+            background: #f9faf9;
+            margin-top: 8px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border-left: 4px solid #4CAF50;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lesson:active {
+            background: #f0f7f0;
+        }
+
+        .lesson-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .lesson-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .lesson-title {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .lesson-duration {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .lesson.completed {
+            border-left-color: #81c784;
+            background: #f1f8f2;
+        }
+
+        .lesson-status {
+            font-size: 12px;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .lesson-status.done {
+            color: #4CAF50;
+        }
+
+        .lesson-status.todo {
+            color: #bbb;
+        }
+
+        .course-progress-card {
+            background: #fff;
+            margin: 12px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #4CAF50;
+            font-weight: 500;
+        }
+
+        .progress-bar-track {
+            height: 8px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #66bb6a, #4CAF50);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .chapter-progress {
+            font-size: 11px;
+            color: #4CAF50;
+            margin-right: 4px;
+        }
+
+        .hwBtn {
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* 作业页 */
+        .hwCard {
+            background: #fff;
+            margin: 12px;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        /* 班主任头像 */
+        .teacher-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .teacher-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .excellent-entry {
+            background: #fff;
+            margin: 0 12px;
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .submitBtn {
+            background: #4CAF50;
+            color: #fff;
+            width: 90%;
+            margin: 20px auto;
+            display: block;
+            padding: 14px;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        textarea {
+            width: 100%;
+            border: none;
+            background: transparent;
+            border-radius: 0;
+            padding: 0;
+            margin: 0;
+            min-height: 120px;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            color: #333;
+        }
+
+        textarea::placeholder {
+            color: #999;
+        }
+
+        .submit-form-wrap {
+            padding: 16px;
+        }
+
+        .input-card {
+            background: #E1E8E1;
+            border-radius: 18px;
+            padding: 14px;
+        }
+
+        .input-card__textarea {
+            width: 100%;
+            min-height: 120px;
+        }
+
+        .media-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .media-btn {
+            flex: 0 0 auto;
+            width: 100px;
+            aspect-ratio: 1;
+            background: #d5ddd5;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #666;
+            border: none;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .media-btn:active {
+            opacity: 0.85;
+        }
+
+        .media-btn--add {
+            border: 1px dashed #aaa;
+        }
+
+        .media-btn__icon {
+            font-size: 22px;
+        }
+
+        .media-preview {
+            position: relative;
+            width: 100px;
+            aspect-ratio: 1;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .media-preview__img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .media-preview__remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.55);
+            color: #fff;
+            border: none;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .hw-photo-input {
+            display: none;
+        }
+
+        /* 我的作业列表 */
+        .myHwItem {
+            background: #fff;
+            margin: 12px;
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .myHwItem img {
+            max-width: 100px;
+            border-radius: 6px;
+            margin-top: 8px;
+            display: block;
+        }
+
+        .toWall {
+            text-align: center;
+            padding: 16px;
+            color: #4CAF50;
+            cursor: pointer;
+        }
+
+        /* 课程优秀作品：2列瀑布 */
+        .waterfall {
+            column-count: 2;
+            column-gap: 10px;
+            padding: 10px;
+        }
+
+        .workCard {
+            break-inside: avoid;
+            background: #fff;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .workCard:active {
+            transform: scale(0.98);
+        }
+
+        .workImg {
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .workImg img {
+            width: 100%;
+            display: block;
+        }
+
+        .workInfo {
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        .workUser {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .workDesc {
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .workActions {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #999;
+        }
+
+        .like-btn {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .like-btn.liked {
+            color: #ff4757;
+        }
+
+        /* ✅ 小红书风格作品详情页 */
+        .detail-header {
+            position: fixed;
+            top: 44px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%; max-width: var(--app-max-width, 430px);
+            height: 50px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            z-index: 100;
+        }
+
+        .detail-content {
+            padding-top: 50px;
+            padding-bottom: 60px;
+        }
+
+        .detail-img {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            display: block;
+            background: #000;
+        }
+
+        .detail-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: #fff;
+        }
+
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .author-name {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .follow-btn {
+            background: #ff4757;
+            color: #fff;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .follow-btn.followed {
+            background: #e8e8e8;
+            color: #666;
+        }
+
+        .detail-actions {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            background: #fff;
+            border-top: 1px solid #f5f5f5;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .action-item .icon {
+            font-size: 22px;
+        }
+
+        .action-item.liked .icon {
+            color: #ff4757;
+        }
+
+        .action-item.collected .icon {
+            color: #ffb300;
+        }
+
+        .detail-desc {
+            padding: 16px;
+            background: #fff;
+            margin-bottom: 12px;
+        }
+
+        .comments-title {
+            padding: 12px 16px;
+            font-weight: 500;
+            background: #fff;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .comment-item {
+            padding: 12px 16px;
+            background: #fff;
+            border-bottom: 1px solid #f5f5f5;
+            display: flex;
+            gap: 12px;
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .comment-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-user {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 底部评论输入框 */
+        .comment-input-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%; max-width: var(--app-max-width, 430px);
+            background: #fff;
+            padding: 10px 16px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .comment-input {
+            flex: 1;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .send-btn {
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body data-active-module="wanhua">
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="top-nav-item" onclick="window.location.href='index.html'">课程总览</div>
+        <div class="top-nav-item active">学习中心</div>
+        <div class="top-nav-item" onclick="window.location.href='work.html'">作品墙</div>
+        <div class="top-nav-item" onclick="window.location.href='order.html'">我的订单</div>
+    </div>
+
+    <!-- 底部导航栏 -->
+        <nav class="global-bottom-nav">
+        <button type="button" class="nav-item" data-nav-module="baixiaotang"><span class="nav-icon">💡</span><span>百晓堂</span></button>
+        <button type="button" class="nav-item active" data-nav-module="wanhua"><span class="nav-icon">📺</span><span>万花筒</span></button>
+        <button type="button" class="nav-item" data-nav-module="gongxuetang"><span class="nav-icon">🌿</span><span>共学堂</span></button>
+        <button type="button" class="nav-item" data-nav-module="chuanjia"><span class="nav-icon">📤</span><span>传家录</span></button>
+        <button type="button" class="nav-item" data-nav-module="ziliudi"><span class="nav-icon">🏠</span><span>自留地</span></button>
+    </nav>
+
+    <!-- 学习主页 -->
+    <div id="pageLearn" class="page active">
+        <div class="header">
+            <div class="back-btn" onclick="window.location.href='index.html'">←</div>
+            <div class="header-title" id="courseTitle">课程学习</div>
+            <div></div>
+        </div>
+        <div class="video">
+            <img src="wwanhuatong/shipin.png" alt="课程视频封面" onerror="this.style.display='none'">
+        </div>
+        <div class="course-progress-card">
+            <div class="progress-header">
+                <span class="progress-label">课程进度</span>
+                <span class="progress-text" id="progressText">已学 0/0 节</span>
+            </div>
+            <div class="progress-bar-track">
+                <div class="progress-bar-fill" id="progressBarFill" style="width:0%"></div>
+            </div>
+        </div>
+        <div class="section">
+            <span class="section-title-text">学习内容</span>
+            <button class="hwBtn" id="goHw">查看作业</button>
+        </div>
+        <div class="chapter-list" id="chapterList"></div>
+    </div>
+
+    <!-- 作业详情 -->
+    <div id="pageHomework" class="page">
+        <div class="header">
+            <div class="back-btn" onclick="show('pageLearn')">←</div>
+            <div class="header-title">本课作业</div>
+            <div></div>
+        </div>
+        <div class="hwCard">
+            <div style="display:flex;gap:12px;align-items:center;">
+                <div class="teacher-avatar">
+                    <img src="wwanhuatong/wanhuatongtouxiang.jpg" alt="张美丽老师" onerror="this.style.display='none'">
+                </div>
+                <div><strong>张美丽</strong><span style="background:#ffc107;font-size:10px;padding:2px 5px;border-radius:4px;margin-left:6px;">班主任</span><div style="font-size:12px;color:#999;">今天 10:30</div></div>
+                <div style="margin-left:auto;color:#4CAF50;">已查看</div>
+            </div>
+            <div style="font-weight:bold;margin:16px 0 8px;font-size:18px;">周末作业</div>
+            <div style="color:#666;">1、书写笔画“撇”(竖撇)三行，一行描红，两行独立书写，注意占格及书写要点...</div>
+        </div>
+        <div class="excellent-entry" id="goCourseWall">
+            <span>🏅优秀作业</span>
+            <span id="excellentCount">4个 ></span>
+        </div>
+        <button class="submitBtn" id="goSubmit">提交作业</button>
+    </div>
+
+    <!-- 提交作业 -->
+    <div id="pageSubmit" class="page">
+        <div class="header">
+            <div class="back-btn" onclick="show('pageHomework')">←</div>
+            <div class="header-title">提交作业</div>
+            <button id="submit" style="background:none;border:none;color:#4CAF50;font-size:16px;">提交</button>
+        </div>
+        <div class="submit-form-wrap">
+            <div class="input-card">
+                <textarea id="content" class="input-card__textarea" placeholder="请输入作业描述..."></textarea>
+                <div class="media-row" id="hwMediaRow">
+                    <button type="button" class="media-btn media-btn--add" id="upImg">
+                        <span class="media-btn__icon">📷</span>添加照片
+                    </button>
+                </div>
+                <input type="file" id="imgFile" class="hw-photo-input" accept="image/*">
+            </div>
+        </div>
+    </div>
+
+    <!-- 我的过往作业 -->
+    <div id="pageMyHwList" class="page">
+        <div class="header">
+            <div class="back-btn" onclick="show('pageLearn')">←</div>
+            <div class="header-title">我的作业</div>
+            <div></div>
+        </div>
+        <div id="myHwContainer"></div>
+        <div class="toWall" onclick="show('pageCourseWall')">查看课程优秀作品墙</div>
+    </div>
+
+    <!-- 课程优秀作品墙 -->
+    <div id="pageCourseWall" class="page">
+        <div class="header">
+            <div class="back-btn" onclick="show('pageHomework')">←</div>
+            <div class="header-title">优秀作品</div>
+            <div></div>
+        </div>
+        <div class="waterfall" id="wallContainer"></div>
+    </div>
+
+    <!-- ✅ 小红书风格作品详情页 -->
+    <div id="pageWorkDetail" class="page">
+        <div class="detail-header">
+            <div class="back-btn" onclick="show(detailBackPage)">←</div>
+            <div class="header-title">作品详情</div>
+           
+        </div>
+        <div class="detail-content">
+            <img id="detailImg" class="detail-img" src="" alt="作品大图">
+            <div class="detail-author">
+                <div class="author-avatar">
+                    <img id="detailAuthorAvatar" src="wwanhuatong/wanhuatongtouxiang.jpg" alt="作者头像">
+                </div>
+                <div class="author-name" id="detailAuthorName"></div>
+                <button class="follow-btn" id="detailFollowBtn" type="button">+ 关注</button>
+            </div>
+            <div class="detail-actions">
+                <div class="action-item" id="detailLikeBtn">
+                    <span class="icon">🤍</span>
+                    <span id="detailLikeCount">0</span>
+                </div>
+                <div class="action-item" id="detailCommentBtn">
+                    <span class="icon">💬</span>
+                    <span id="detailCommentCount">0</span>
+                </div>
+                <div class="action-item" id="detailCollectBtn">
+                    <span class="icon">⭐</span>
+                    <span id="detailCollectText">收藏</span>
+                </div>
+                <div class="action-item" id="detailShareBtn">
+                    <span class="icon">↗️</span>
+                    <span>分享</span>
+                </div>
+            </div>
+            <div class="detail-desc" id="detailDesc"></div>
+            <div class="comments-title">评论区</div>
+            <div id="commentList"></div>
+        </div>
+        <div class="comment-input-bar">
+            <input type="text" class="comment-input" id="commentInput" placeholder="说点什么...">
+            <button class="send-btn" id="sendCommentBtn">发送</button>
+        </div>
+    </div>
+
+    <script src="wht-toast.js"></script>
+    <script>
+        // 全局数据
+        const course = localStorage.getItem('currentStudyCourse') || '水彩画入门课10节';
+        const user = '李同学';
+        let currentImgBase64 = '';
+        let currentWorkOriginalIndex = -1;
+        let detailBackPage = 'pageCourseWall';
+
+        const CN_CHAPTER_NUMS = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+
+        const courseCurriculum = {
+            '水彩画入门课10节': [
+                {
+                    title: '基础入门',
+                    lessons: [
+                        { icon: '🎨', title: '认识水彩工具', duration: '12分钟' },
+                        { icon: '🖌️', title: '调色基础', duration: '15分钟' },
+                        { icon: '🌊', title: '湿画法练习', duration: '18分钟' }
+                    ]
+                },
+                {
+                    title: '技法进阶',
+                    lessons: [
+                        { icon: '🖼️', title: '干画法与叠色', duration: '16分钟' },
+                        { icon: '✨', title: '留白与晕染技巧', duration: '14分钟' },
+                        { icon: '🍎', title: '简单静物写生', duration: '20分钟' }
+                    ]
+                },
+                {
+                    title: '风景写生',
+                    lessons: [
+                        { icon: '🏔️', title: '远山与天空', duration: '18分钟' },
+                        { icon: '🌳', title: '树木与水面', duration: '17分钟' }
+                    ]
+                },
+                {
+                    title: '综合创作',
+                    lessons: [
+                        { icon: '🎑', title: '完整风景作品', duration: '22分钟' },
+                        { icon: '🏆', title: '课程总结与作品展示', duration: '10分钟' }
+                    ]
+                }
+            ],
+            '书法基础': [
+                {
+                    title: '笔画基础',
+                    lessons: [
+                        { icon: '✍️', title: '握笔与坐姿', duration: '10分钟' },
+                        { icon: '一', title: '横竖撇捺基本笔画', duration: '15分钟' },
+                        { icon: '📝', title: '简单字练习', duration: '18分钟' }
+                    ]
+                },
+                {
+                    title: '楷书入门',
+                    lessons: [
+                        { icon: '📖', title: '永字八法', duration: '16分钟' },
+                        { icon: '🖋️', title: '左右结构字', duration: '14分钟' },
+                        { icon: '📜', title: '上下结构字', duration: '14分钟' }
+                    ]
+                },
+                {
+                    title: '作品创作',
+                    lessons: [
+                        { icon: '🎋', title: '对联书写', duration: '20分钟' },
+                        { icon: '🏮', title: '福字与吉祥语', duration: '18分钟' }
+                    ]
+                }
+            ],
+            '手机摄影': [
+                {
+                    title: '拍摄基础',
+                    lessons: [
+                        { icon: '📱', title: '认识手机相机功能', duration: '12分钟' },
+                        { icon: '☀️', title: '光线与构图', duration: '15分钟' },
+                        { icon: '🎯', title: '对焦与曝光', duration: '13分钟' }
+                    ]
+                },
+                {
+                    title: '场景实战',
+                    lessons: [
+                        { icon: '🌸', title: '花卉微距拍摄', duration: '16分钟' },
+                        { icon: '👴', title: '人像与合影', duration: '18分钟' },
+                        { icon: '🌅', title: '风景与日出', duration: '17分钟' }
+                    ]
+                },
+                {
+                    title: '后期修图',
+                    lessons: [
+                        { icon: '🎨', title: '基础调色', duration: '14分钟' },
+                        { icon: '✂️', title: '裁剪与滤镜', duration: '12分钟' }
+                    ]
+                }
+            ],
+            '小提琴入门': [
+                {
+                    title: '入门准备',
+                    lessons: [
+                        { icon: '🎻', title: '认识小提琴与持琴', duration: '12分钟' },
+                        { icon: '🎵', title: '持弓与空弦练习', duration: '15分钟' }
+                    ]
+                },
+                {
+                    title: '音阶练习',
+                    lessons: [
+                        { icon: '🎼', title: 'D大调音阶', duration: '16分钟' },
+                        { icon: '🎶', title: 'G大调音阶', duration: '16分钟' },
+                        { icon: '⏱️', title: '节奏与节拍器', duration: '14分钟' }
+                    ]
+                },
+                {
+                    title: '曲目演奏',
+                    lessons: [
+                        { icon: '🌟', title: '小星星', duration: '18分钟' },
+                        { icon: '🎻', title: '欢乐颂片段', duration: '20分钟' }
+                    ]
+                }
+            ]
+        };
+
+        function getCourseChapters() {
+            return courseCurriculum[course] || courseCurriculum['水彩画入门课10节'];
+        }
+
+        const PROGRESS_STORAGE_KEY = 'whtStudyProgress';
+
+        function getLessonKey(chapterIndex, lessonIndex) {
+            return chapterIndex + '-' + lessonIndex;
+        }
+
+        function getCourseProgress() {
+            const all = JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEY) || '{}');
+            return all[course] || [];
+        }
+
+        function saveCourseProgress(completedList) {
+            const all = JSON.parse(localStorage.getItem(PROGRESS_STORAGE_KEY) || '{}');
+            all[course] = completedList;
+            localStorage.setItem(PROGRESS_STORAGE_KEY, JSON.stringify(all));
+        }
+
+        function isLessonComplete(chapterIndex, lessonIndex) {
+            return getCourseProgress().includes(getLessonKey(chapterIndex, lessonIndex));
+        }
+
+        function markLessonComplete(chapterIndex, lessonIndex) {
+            const key = getLessonKey(chapterIndex, lessonIndex);
+            const progress = getCourseProgress();
+            if (progress.includes(key)) return false;
+            progress.push(key);
+            saveCourseProgress(progress);
+            return true;
+        }
+
+        function getTotalLessons() {
+            return getCourseChapters().reduce(function(sum, ch) {
+                return sum + ch.lessons.length;
+            }, 0);
+        }
+
+        function getCompletedCount() {
+            return getCourseProgress().length;
+        }
+
+        function getChapterCompletedCount(chapterIndex) {
+            const chapters = getCourseChapters();
+            const chapter = chapters[chapterIndex];
+            if (!chapter) return 0;
+            let count = 0;
+            for (let i = 0; i < chapter.lessons.length; i++) {
+                if (isLessonComplete(chapterIndex, i)) count++;
+            }
+            return count;
+        }
+
+        function updateProgressUI() {
+            const total = getTotalLessons();
+            const done = getCompletedCount();
+            const percent = total ? Math.round(done / total * 100) : 0;
+            const progressText = document.getElementById('progressText');
+            const progressBarFill = document.getElementById('progressBarFill');
+            if (progressText) {
+                progressText.innerText = '已学 ' + done + '/' + total + ' 节';
+            }
+            if (progressBarFill) {
+                progressBarFill.style.width = percent + '%';
+            }
+        }
+
+        function renderChapterList() {
+            const chapters = getCourseChapters();
+            const container = document.getElementById('chapterList');
+
+            container.innerHTML = chapters.map(function(ch, chapterIndex) {
+                const chapterNum = CN_CHAPTER_NUMS[chapterIndex] || String(chapterIndex + 1);
+                const chapterDone = getChapterCompletedCount(chapterIndex);
+                const lessonsHtml = ch.lessons.map(function(lesson, lessonIndex) {
+                    const completed = isLessonComplete(chapterIndex, lessonIndex);
+                    return `
+                        <div class="lesson${completed ? ' completed' : ''}" data-chapter="${chapterIndex}" data-lesson="${lessonIndex}">
+                            <span class="lesson-icon">${lesson.icon || '📖'}</span>
+                            <div class="lesson-info">
+                                <div class="lesson-title">第${lessonIndex + 1}节 ${lesson.title}</div>
+                                ${lesson.duration ? `<div class="lesson-duration">${lesson.duration}</div>` : ''}
+                            </div>
+                            <span class="lesson-status ${completed ? 'done' : 'todo'}">${completed ? '✓ 已学' : '未学'}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="chapter-block" data-chapter="${chapterIndex}">
+                        <div class="chapter-header">
+                            <span class="chapter-index">第${chapterNum}章</span>
+                            <span class="chapter-title">${ch.title}</span>
+                            <span class="chapter-progress">已学${chapterDone}/${ch.lessons.length}节</span>
+                            <span class="chapter-arrow">▼</span>
+                        </div>
+                        <div class="chapter-lessons">${lessonsHtml}</div>
+                    </div>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.chapter-header').forEach(function(header) {
+                header.addEventListener('click', function() {
+                    const block = header.closest('.chapter-block');
+                    if (block) block.classList.toggle('expanded');
+                });
+            });
+
+            container.querySelectorAll('.lesson').forEach(function(item) {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const chapterIndex = parseInt(this.dataset.chapter, 10);
+                    const lessonIndex = parseInt(this.dataset.lesson, 10);
+                    openLesson(chapterIndex, lessonIndex);
+                });
+            });
+
+            updateProgressUI();
+        }
+
+        function openLesson(chapterIndex, lessonIndex) {
+            const chapters = getCourseChapters();
+            const chapter = chapters[chapterIndex];
+            const lesson = chapter && chapter.lessons[lessonIndex];
+            if (!lesson) return;
+
+            const isNew = markLessonComplete(chapterIndex, lessonIndex);
+            renderChapterList();
+
+            if (isNew) {
+                showWhtToast('已开始学习：' + lesson.title);
+            } else {
+                showWhtToast('继续学习：' + lesson.title);
+            }
+        }
+
+        function getFollowedUsers() {
+            return JSON.parse(localStorage.getItem('whtFollowedUsers') || '[]');
+        }
+
+        function saveFollowedUsers(list) {
+            localStorage.setItem('whtFollowedUsers', JSON.stringify(list));
+        }
+
+        function isAuthorFollowed(author) {
+            return getFollowedUsers().includes(author);
+        }
+
+        function toggleFollowAuthor(author) {
+            const list = getFollowedUsers();
+            const idx = list.indexOf(author);
+            if (idx === -1) {
+                list.push(author);
+                showWhtToast('已关注 ' + author);
+            } else {
+                list.splice(idx, 1);
+                showWhtToast('已取消关注');
+            }
+            saveFollowedUsers(list);
+            updateFollowState(author);
+        }
+
+        function updateFollowState(author) {
+            const btn = document.getElementById('detailFollowBtn');
+            if (!btn) return;
+            if (author === user) {
+                btn.style.display = 'none';
+                return;
+            }
+            btn.style.display = '';
+            if (isAuthorFollowed(author)) {
+                btn.textContent = '已关注';
+                btn.classList.add('followed');
+            } else {
+                btn.textContent = '+ 关注';
+                btn.classList.remove('followed');
+            }
+        }
+
+        function updateCollectState(work) {
+            const btn = document.getElementById('detailCollectBtn');
+            const text = document.getElementById('detailCollectText');
+            if (!btn || !text) return;
+            if (work.isCollected) {
+                btn.classList.add('collected');
+                text.textContent = '已收藏';
+            } else {
+                btn.classList.remove('collected');
+                text.textContent = '收藏';
+            }
+        }
+
+        function toggleCollect(originalIndex) {
+            const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            const work = hwList[originalIndex];
+            if (!work) return;
+            work.isCollected = !work.isCollected;
+            localStorage.setItem('hwList', JSON.stringify(hwList));
+            updateCollectState(work);
+            showWhtToast(work.isCollected ? '已收藏' : '已取消收藏');
+        }
+
+        function shareWork(work) {
+            const text = (work.user || '同学') + '的作品：' + (work.content || '');
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function() {
+                    showWhtToast('内容已复制，可分享给好友');
+                }).catch(function() {
+                    showWhtToast('分享成功');
+                });
+            } else {
+                showWhtToast('分享成功');
+            }
+        }
+
+        // 强制迁移所有旧数据
+        function migrateAllOldData() {
+            const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            let needSave = false;
+
+            hwList.forEach((work) => {
+                if (typeof work.likeCount === 'undefined') {
+                    work.likeCount = 0;
+                    needSave = true;
+                }
+                if (typeof work.isLiked === 'undefined') {
+                    work.isLiked = false;
+                    needSave = true;
+                }
+                if (typeof work.comments === 'undefined') {
+                    work.comments = [];
+                    needSave = true;
+                }
+                if (typeof work.isCollected === 'undefined') {
+                    work.isCollected = false;
+                    needSave = true;
+                }
+            });
+
+            if (needSave) {
+                localStorage.setItem('hwList', JSON.stringify(hwList));
+                console.log('✅ 旧数据迁移完成');
+            }
+        }
+
+        // 优秀作品墙默认模板（work1 ~ work4，按当前课程写入）
+        const WALL_WORK_TEMPLATES = [
+            {
+                user: '王阿姨',
+                content: '水彩入门第一幅作品，尝试基本调色与湿画法，老师说我进步很大！',
+                img: 'wwanhuatong/work1.jpg',
+                time: '2026/6/10 14:30:00',
+                likeCount: 28,
+                isLiked: false,
+                isCollected: false,
+                comments: [
+                    { user: '张老师', content: '颜色过渡很自然，继续加油！', time: '2026/6/10 15:00:00' },
+                    { user: '李同学', content: '画得真好，我也要向你学习', time: '2026/6/10 16:20:00' }
+                ]
+            },
+            {
+                user: '刘叔叔',
+                content: '湖边柳树风景写生，练习自然光影表现，周末去公园画的',
+                img: 'wwanhuatong/work2.jpg',
+                time: '2026/6/12 10:15:00',
+                likeCount: 42,
+                isLiked: false,
+                isCollected: false,
+                comments: [
+                    { user: '陈阿姨', content: '风景太美了，像真的一样', time: '2026/6/12 11:00:00' }
+                ]
+            },
+            {
+                user: '赵奶奶',
+                content: '硬笔书法撇笔画练习，掌握起笔收笔技巧，练了一个星期终于有感觉了',
+                img: 'wwanhuatong/work3.jpg',
+                time: '2026/6/14 16:45:00',
+                likeCount: 35,
+                isLiked: false,
+                isCollected: false,
+                comments: []
+            },
+            {
+                user: '李同学',
+                content: '苹果静物写生，尝试塑造体积感，阴影部分还需要加强',
+                img: 'wwanhuatong/work4.jpg',
+                time: '2026/6/15 09:20:00',
+                likeCount: 19,
+                isLiked: false,
+                isCollected: false,
+                comments: []
+            }
+        ];
+
+        function getWallDefaultsForCourse(courseName) {
+            return WALL_WORK_TEMPLATES.map(function(item) {
+                return Object.assign({}, item, { course: courseName });
+            });
+        }
+
+        function ensureCourseWallDefaults() {
+            let hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            const defaults = getWallDefaultsForCourse(course);
+            let changed = false;
+
+            defaults.forEach(function(def) {
+                const exists = hwList.some(function(h) {
+                    return h.course === course && h.img === def.img;
+                });
+                if (!exists) {
+                    hwList.push(def);
+                    changed = true;
+                }
+            });
+
+            if (changed) {
+                localStorage.setItem('hwList', JSON.stringify(hwList));
+            }
+        }
+
+        function getCourseWallDisplayWorks() {
+            ensureCourseWallDefaults();
+            const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            const defaults = getWallDefaultsForCourse(course);
+
+            return defaults.map(function(def) {
+                const originalIndex = hwList.findIndex(function(h) {
+                    return h.course === course && h.img === def.img;
+                });
+                if (originalIndex === -1) return null;
+                return Object.assign({}, hwList[originalIndex], { originalIndex: originalIndex });
+            }).filter(Boolean);
+        }
+
+        function getCourseWorkCount() {
+            return getCourseWallDisplayWorks().length;
+        }
+
+        function updateExcellentEntry() {
+            ensureCourseWallDefaults();
+            const el = document.getElementById('excellentCount');
+            if (el) el.textContent = getCourseWorkCount() + '个 >';
+        }
+
+        // 初始化默认作品数据
+        function initDefaultWorks() {
+            ensureCourseWallDefaults();
+        }
+
+        // 页面切换
+        function show(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            if (id === 'pageCourseWall') {
+                migrateAllOldData();
+                ensureCourseWallDefaults();
+                renderCourseWall();
+            }
+            if (id === 'pageHomework') updateExcellentEntry();
+            if (id === 'pageMyHwList') renderMyHw();
+        }
+
+        // 渲染我的作业列表
+        function renderMyHw() {
+            const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            const my = hwList.filter(h => h.user === user && h.course === course);
+            const box = document.getElementById('myHwContainer');
+            
+            if (my.length === 0) {
+                box.innerHTML = '<div class="empty-state">暂无作业</div>';
+                return;
+            }
+            
+            box.innerHTML = my.map(h => `
+                <div class="myHwItem">
+                    <div>${h.content}</div>
+                    ${h.img ? `<img src="${h.img}" alt="作业图片">` : ''}
+                    <div style="font-size:12px;color:#999;margin-top:8px;">${h.time}</div>
+                </div>
+            `).join('');
+        }
+
+        // ✅ 修复版：渲染课程优秀瀑布墙（保存原始索引）
+        function renderCourseWall() {
+            const courseWorks = getCourseWallDisplayWorks();
+            const box = document.getElementById('wallContainer');
+
+            updateExcellentEntry();
+
+            if (courseWorks.length === 0) {
+                box.innerHTML = '<div class="empty-state">暂无优秀作品</div>';
+                return;
+            }
+            
+            box.innerHTML = courseWorks.map((work) => {
+                const likeCount = work.likeCount || 0;
+                const isLiked = work.isLiked || false;
+                
+                return `
+                <div class="workCard" data-original-index="${work.originalIndex}">
+                    <div class="workImg">${work.img ? `<img src="${work.img}" alt="优秀作品">` : ''}</div>
+                    <div class="workInfo">
+                        <div class="workUser">${work.user}</div>
+                        <div class="workDesc">${work.content.substring(0, 30)}${work.content.length > 30 ? '...' : ''}</div>
+                        <div class="workActions">
+                            <span class="like-btn ${isLiked ? 'liked' : ''}" data-original-index="${work.originalIndex}">
+                                ${isLiked ? '❤️' : '🤍'} ${likeCount}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+
+            bindWorkCardEvents();
+        }
+
+        // ✅ 修复版：绑定事件（使用原始索引）
+        function bindWorkCardEvents() {
+            // 点击作品卡片进入详情页
+            document.querySelectorAll('.workCard').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('like-btn')) return;
+                    
+                    const originalIndex = parseInt(this.dataset.originalIndex);
+                    openWorkDetail(originalIndex);
+                });
+            });
+
+            // 点击点赞按钮
+            document.querySelectorAll('.like-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const originalIndex = parseInt(this.dataset.originalIndex);
+                    toggleLike(originalIndex);
+                });
+            });
+        }
+
+        // ✅ 修复版：点赞/取消点赞（使用原始索引）
+        function toggleLike(originalIndex) {
+            const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            const work = hwList[originalIndex]; // ✅ 现在用原始索引取作品，绝对不会错
+            
+            if (typeof work.likeCount === 'undefined') work.likeCount = 0;
+            if (typeof work.isLiked === 'undefined') work.isLiked = false;
+            
+            if (work.isLiked) {
+                work.likeCount--;
+                work.isLiked = false;
+            } else {
+                work.likeCount++;
+                work.isLiked = true;
+            }
+            
+            localStorage.setItem('hwList', JSON.stringify(hwList));
+            renderCourseWall();
+            
+            // 如果正在查看详情页，也更新详情页的点赞状态
+            if (currentWorkOriginalIndex === originalIndex) {
+                updateDetailLikeState(work);
+            }
+        }
+
+        // ✅ 修复版：打开作品详情页（使用原始索引）
+        function openWorkDetail(originalIndex) {
+            currentWorkOriginalIndex = originalIndex;
+            detailBackPage = 'pageCourseWall';
+            const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            const work = hwList[originalIndex];
+            if (!work) return;
+
+            document.getElementById('detailImg').src = work.img;
+            document.getElementById('detailAuthorName').innerText = work.user;
+            document.getElementById('detailDesc').innerText = work.content;
+
+            updateDetailLikeState(work);
+            document.getElementById('detailCommentCount').innerText = (work.comments || []).length;
+            updateFollowState(work.user);
+            if (typeof work.isCollected === 'undefined') work.isCollected = false;
+            updateCollectState(work);
+            renderCommentList(work.comments);
+
+            show('pageWorkDetail');
+        }
+
+        // 更新详情页点赞状态
+        function updateDetailLikeState(work) {
+            const likeBtn = document.getElementById('detailLikeBtn');
+            const likeCount = document.getElementById('detailLikeCount');
+            
+            likeCount.innerText = work.likeCount || 0;
+            if (work.isLiked) {
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('.icon').innerText = '❤️';
+            } else {
+                likeBtn.classList.remove('liked');
+                likeBtn.querySelector('.icon').innerText = '🤍';
+            }
+        }
+
+        // 渲染评论列表
+        function renderCommentList(comments) {
+            const box = document.getElementById('commentList');
+            
+            if (!comments || comments.length === 0) {
+                box.innerHTML = '<div style="text-align:center;padding:30px;color:#999;">暂无评论，快来抢沙发吧~</div>';
+                return;
+            }
+            
+            box.innerHTML = comments.map(c => `
+                <div class="comment-item">
+                    <div class="comment-avatar">
+                        <img src="wwanhuatong/wanhuatongtouxiang.jpg" alt="评论者头像">
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-user">${c.user}</div>
+                        <div class="comment-text">${c.content}</div>
+                        <div class="comment-time">${c.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ✅ 修复版：提交评论（使用原始索引）
+        function submitComment() {
+            const input = document.getElementById('commentInput');
+            const content = input.value.trim();
+            
+            if (!content) {
+                showWhtToast('请输入评论内容');
+                return;
+            }
+            
+            if (currentWorkOriginalIndex === -1) return;
+            
+            const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            const work = hwList[currentWorkOriginalIndex];
+            
+            if (!work.comments) work.comments = [];
+            
+            // 添加新评论
+            work.comments.unshift({
+                user: user,
+                content: content,
+                time: new Date().toLocaleString()
+            });
+            
+            localStorage.setItem('hwList', JSON.stringify(hwList));
+            
+            // 更新页面
+            document.getElementById('detailCommentCount').innerText = work.comments.length;
+            renderCommentList(work.comments);
+            input.value = '';
+
+            showWhtToast('评论发布成功');
+        }
+
+        // 作业图片上传（UI 参考传家录回忆录篇章）
+        const MAX_HW_PHOTOS = 1;
+
+        function renderHwPhotos() {
+            const row = document.getElementById('hwMediaRow');
+            const addBtn = document.getElementById('upImg');
+            if (!row || !addBtn) return;
+
+            row.querySelectorAll('.media-preview').forEach(function(node) {
+                node.remove();
+            });
+
+            if (currentImgBase64) {
+                const wrap = document.createElement('div');
+                wrap.className = 'media-preview';
+                wrap.innerHTML = '<img class="media-preview__img" src="' + currentImgBase64 + '" alt="作业图片"><button type="button" class="media-preview__remove" aria-label="删除">×</button>';
+                wrap.querySelector('.media-preview__remove').addEventListener('click', function() {
+                    currentImgBase64 = '';
+                    renderHwPhotos();
+                    showWhtToast('已移除照片');
+                });
+                row.insertBefore(wrap, addBtn);
+            }
+
+            addBtn.style.display = currentImgBase64 ? 'none' : '';
+        }
+
+        document.getElementById('imgFile').onchange = function(e) {
+            const file = e.target.files[0];
+            e.target.value = '';
+            if (!file) return;
+
+            if (currentImgBase64) {
+                showWhtToast('最多添加 ' + MAX_HW_PHOTOS + ' 张照片');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(res) {
+                currentImgBase64 = res.target.result;
+                renderHwPhotos();
+                showWhtToast('照片已添加');
+            };
+        };
+
+        // 提交作业
+        document.getElementById('submit').onclick = () => {
+            const content = document.getElementById('content').value.trim();
+            if (!content) {
+                showWhtToast('请填写作业内容');
+                return;
+            }
+            
+            const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            hwList.unshift({
+                user,
+                course,
+                content,
+                img: currentImgBase64,
+                time: new Date().toLocaleString(),
+                likeCount: 0,
+                isLiked: false,
+                isCollected: false,
+                comments: []
+            });
+            
+            localStorage.setItem('hwList', JSON.stringify(hwList));
+            showWhtToast('提交成功');
+            
+            currentImgBase64 = '';
+            renderHwPhotos();
+            document.getElementById('content').value = '';
+            
+            renderMyHw();
+            show('pageMyHwList');
+        };
+
+        // 事件绑定
+        document.getElementById('goHw').onclick = () => show('pageHomework');
+        document.getElementById('goSubmit').onclick = () => show('pageSubmit');
+        document.getElementById('goCourseWall').onclick = () => show('pageCourseWall');
+        document.getElementById('upImg').onclick = () => document.getElementById('imgFile').click();
+        
+        // 详情页点赞按钮
+        document.getElementById('detailLikeBtn').onclick = function() {
+            if (currentWorkOriginalIndex !== -1) {
+                toggleLike(currentWorkOriginalIndex);
+            }
+        };
+
+        document.getElementById('detailFollowBtn').onclick = function() {
+            if (currentWorkOriginalIndex === -1) return;
+            const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            const work = hwList[currentWorkOriginalIndex];
+            if (work && work.user !== user) toggleFollowAuthor(work.user);
+        };
+
+        document.getElementById('detailCollectBtn').onclick = function() {
+            if (currentWorkOriginalIndex !== -1) toggleCollect(currentWorkOriginalIndex);
+        };
+
+        document.getElementById('detailShareBtn').onclick = function() {
+            if (currentWorkOriginalIndex === -1) return;
+            const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
+            const work = hwList[currentWorkOriginalIndex];
+            if (work) shareWork(work);
+        };
+
+        document.getElementById('detailCommentBtn').onclick = function() {
+            const list = document.getElementById('commentList');
+            if (list) list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('commentInput').focus();
+        };
+        
+        // 发送评论按钮
+        document.getElementById('sendCommentBtn').onclick = submitComment;
+        
+        // 回车发送评论
+        document.getElementById('commentInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitComment();
+            }
+        });
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.XueWuyaAuth && XueWuyaAuth.blockGuestPage('index.html')) return;
+            initDefaultWorks();
+            migrateAllOldData();
+            document.getElementById('courseTitle').innerText = course;
+            renderChapterList();
+            renderMyHw();
+            updateExcellentEntry();
+            renderHwPhotos();
+        });
+    </script>
+    <script src="../js/voice-mode.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/nav.js"></script>
+</body>
+</html>

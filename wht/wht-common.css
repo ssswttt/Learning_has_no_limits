@@ -1,0 +1,121 @@
+@import url("../css/app-shell.css");
+
+:root {
+  --wht-top-nav-height: 44px;
+  --wht-bottom-nav-height: 56px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+body {
+  padding-top: var(--wht-top-nav-height);
+  padding-bottom: var(--wht-bottom-nav-height);
+}
+
+/* 万花筒内部顶部 Tab 导航 */
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max-width);
+  height: var(--wht-top-nav-height);
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+}
+
+.top-nav-item {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  color: #666;
+  line-height: var(--wht-top-nav-height);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.top-nav-item.active {
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+/* 页面切换容器 */
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+/* 通用页头 */
+.header {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  position: sticky;
+  top: var(--wht-top-nav-height);
+  z-index: 99;
+}
+
+.back-btn {
+  font-size: 20px;
+  cursor: pointer;
+  color: #333;
+  background: none;
+  border: none;
+}
+
+.header-title {
+  font-size: 17px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 底部固定栏（作品上传等） */
+.wht-fixed-bar {
+  position: fixed;
+  bottom: var(--wht-bottom-nav-height);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max-width);
+  z-index: 150;
+}
+
+/* 手机端 Toast 提示 */
+.wht-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: calc(100% - 48px);
+  padding: 12px 20px;
+  background: rgba(0, 0, 0, 0.78);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: center;
+  border-radius: 10px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.wht-toast.show {
+  opacity: 1;
+}

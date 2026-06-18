@@ -1,0 +1,50 @@
+:root {
+  /* 设备尺寸（与全局 app-shell 统一） */
+  --phone-width: 430px;
+  --phone-height: 932px;
+  --phone-radius: 40px;
+  --app-max-width: 430px;
+
+  /* 主题色 */
+  --color-primary: #488E7B;
+  --color-primary-dark: #3d6b4f;
+  --color-primary-light: #67A67D;
+  --color-accent: #4A8B7B;
+
+  /* 背景 */
+  --bg-card: #E1E8E1;
+  --bg-card-light: #E8F5EE;
+  --bg-white: #ffffff;
+  --bg-page-light: #f0f4f1;
+  --gradient-page: linear-gradient(180deg, #A8E6CF 0%, #F0FFF4 100%);
+
+  /* 文字 */
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --text-placeholder: #aaaaaa;
+
+  /* 圆角 */
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  /* 间距 */
+  --spacing-page: 16px;
+  --status-bar-height: 44px;
+  --top-tabs-height: 44px;
+  --bottom-nav-height: 56px;
+
+  /* 渐变 */
+  --gradient-memoir-edit: linear-gradient(180deg, #76B08E 0%, #4A5D4E 100%);
+  --gradient-memoir-view: linear-gradient(180deg, #56A37A 0%, #0D0D0D 85%);
+  --gradient-msg-board: linear-gradient(180deg, #C8E6D9 0%, #F5FAF8 100%);
+  --gradient-msg-detail: linear-gradient(180deg, #88d4ab 0%, #f0f9f4 100%);
+  --gradient-story-create: linear-gradient(180deg, #A8E0C1 0%, #F0F9F4 100%);
+  --gradient-msg-publish: linear-gradient(180deg, #82C9A1 0%, #F0F9F4 100%);
+
+  /* 阴影 */
+  --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.08);
+  --shadow-nav: 0 -2px 12px rgba(0, 0, 0, 0.06);
+}

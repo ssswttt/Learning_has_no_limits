@@ -1,0 +1,2190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>百晓堂 - AI问答</title>
+    <link rel="stylesheet" href="css/app-shell.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #F7F8FA;
+            min-height: 100vh;
+            width: 100%;
+            max-width: var(--app-max-width, 430px);
+            margin: 0 auto;
+            overflow-x: hidden;
+        }
+        .phone-frame {
+            width: 100%;
+            min-height: 100vh;
+            background: transparent;
+            padding: 0;
+            position: relative;
+        }
+        .phone-screen {
+            width: 100%;
+            min-height: 100vh;
+            background: #F7F8FA;
+            border-radius: 0;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .status-bar {
+            display: none;
+        }
+        .page {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: none;
+            flex-direction: column;
+            position: relative;
+            scrollbar-width: none;
+            padding-bottom: 45px;
+        }
+        .page::-webkit-scrollbar { display: none; }
+        .nav-bar {
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: #F7F8FA;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            flex-shrink: 0;
+        }
+        .nav-bar .back-btn {
+            position: absolute;
+            left: 16px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .nav-bar .right-btn {
+            position: absolute;
+            right: 16px; 
+            font-size: 14px;
+            color: #5ECFB5;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .nav-bar .title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        .nav-bar .right-btn {
+            position: absolute;
+            right: 16px;
+            font-size: 14px;
+            color: #5ECFB5;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .tab-bar {
+            width: 100%;
+            margin: 0 auto; 
+            height: 80px;
+            background: #FFFFFF;
+            border-top: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding-top: 8px;
+            flex-shrink: 0;
+            padding-bottom: 20px;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0 12px;
+        }
+        .tab-item svg {
+            width: 24px;
+            height: 24px;
+            transition: all 0.2s;
+        }
+        .tab-item span {
+            font-size: 10px;
+            color: #999;
+            transition: all 0.2s;
+        }
+        .tab-item.active svg { stroke: #5ECFB5; fill: #5ECFB5; }
+        .tab-item.active span { color: #5ECFB5; font-weight: 600; }
+        .home-content { padding: 0 16px 16px; }
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 20px 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .section-title .more {
+            font-size: 13px;
+            color: #999;
+            font-weight: 400;
+            cursor: pointer;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .feature-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: transform 0.2s;
+            user-select: none;
+        }
+        .feature-card:active { transform: scale(0.96); }
+        .feature-card .icon-bg {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .feature-card .icon-bg svg { width: 28px; height: 28px; }
+        .feature-card .label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        .feature-card .desc {
+            font-size: 11px;
+            color: #999;
+        }
+        .banner-slider {
+            width: 100%;
+            height: 160px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+        .banner-slider img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .banner-dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 6px;
+        }
+        .banner-dots .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+        }
+        .banner-dots .dot.active { background: #fff; width: 16px; border-radius: 3px; }
+        .news-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.03);
+            user-select: none;
+        }
+        .news-item:active { transform: scale(0.98); }
+        .news-item .news-img {
+            width: 100px;
+            height: 75px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #E8E8E8;
+        }
+        .news-item .news-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .news-item .news-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .news-item .news-meta {
+            font-size: 11px;
+            color: #999;
+            display: flex;
+            gap: 8px;
+        }
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #F7F8FA;
+        }
+        .chat-time {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+        .chat-bubble {
+            max-width: 78%;
+            padding: 12px 14px;
+            border-radius: 16px;
+            font-size: 15px;
+            line-height: 1.5;
+            position: relative;
+            word-wrap: break-word;
+        }
+        .chat-bubble.user {
+            align-self: flex-end;
+            background: #5ECFB5;
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-bubble.ai {
+            align-self: flex-start;
+            background: #fff;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .chat-bubble.ai .ai-label {
+            font-size: 11px;
+            color: #5ECFB5;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .chat-input-area {
+            background: #fff;
+            border-top: 1px solid #E8E8E8;
+            padding: 10px 16px 30px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .chat-input {
+            flex: 1;
+            height: 40px;
+            border: 1px solid #E0E0E0;
+            border-radius: 20px;
+            padding: 0 16px;
+            font-size: 15px;
+            outline: none;
+            background: #F7F8FA;
+        }
+        .chat-input:focus { border-color: #5ECFB5; }
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #5ECFB5;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .send-btn svg { width: 20px; height: 20px; }
+        .send-btn:disabled { background: #ccc; }
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .chat-actions button {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            border: 1px solid #E0E0E0;
+            background: #fff;
+            color: #666;
+            cursor: pointer;
+        }
+        .chat-actions button:hover {
+            border-color: #5ECFB5;
+            color: #5ECFB5;
+        }
+        .rating-page {
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            background: #F7F8FA;
+        }
+        .rating-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 32px 24px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        .rating-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+        .rating-card .subtitle {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 24px;
+        }
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+        .star {
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .star:active { transform: scale(1.2); }
+        .star svg {
+            width: 100%;
+            height: 100%;
+            fill: #E0E0E0;
+            stroke: #E0E0E0;
+            transition: all 0.2s;
+        }
+        .star.active svg { fill: #FFC107; stroke: #FFC107; }
+        .feedback-input {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #E0E0E0;
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+        .feedback-input:focus { border-color: #5ECFB5; }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+        }
+        .btn {
+            flex: 1;
+            height: 44px;
+            border-radius: 22px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.96); }
+        .btn-cancel { background: #F0F0F0; color: #666; }
+        .btn-confirm { background: #5ECFB5; color: #fff; }
+        .btn-delete { background: #FF6B6B; color: #fff; }
+        .remind-list {
+            padding: 16px;
+        }
+        .remind-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+        .remind-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            border-radius: 4px 0 0 4px;
+        }
+        .remind-card.orange::before { background: #FF9800; }
+        .remind-card.green::before { background: #4CAF50; }
+        .remind-card.blue::before { background: #2196F3; }
+        .remind-card.purple::before { background: #9C27B0; }
+        .remind-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .remind-icon.orange { background: #FFF3E0; }
+        .remind-icon.green { background: #E8F5E9; }
+        .remind-icon.blue { background: #E3F2FD; }
+        .remind-icon.purple { background: #F3E5F5; }
+        .remind-info { flex: 1; }
+        .remind-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        .remind-time {
+            font-size: 12px;
+            color: #999;
+        }
+        .remind-toggle {
+            width: 48px;
+            height: 28px;
+            border-radius: 14px;
+            background: #E0E0E0;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+        .remind-toggle.active { background: #5ECFB5; }
+        .remind-toggle::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #fff;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .remind-toggle.active::after { transform: translateX(20px); }
+        .add-btn {
+            position: absolute;
+            right: 24px;
+            bottom: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #5ECFB5;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(94,207,181,0.4);
+            cursor: pointer;
+            z-index: 50;
+        }
+        .add-btn svg { width: 24px; height: 24px; }
+        .form-page { padding: 16px; }
+        .form-group {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-group input {
+            width: 100%;
+            height: 44px;
+            border: 1px solid #E8E8E8;
+            border-radius: 10px;
+            padding: 0 14px;
+            font-size: 15px;
+            outline: none;
+            background: #FAFAFA;
+            font-family: inherit;
+        }
+        .form-group input:focus { border-color: #5ECFB5; }
+        .date-picker, .time-picker {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 12px 0;
+        }
+        .picker-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .picker-col .value {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a1a1a;
+            min-width: 50px;
+            text-align: center;
+        }
+        .picker-col .label {
+            font-size: 11px;
+            color: #999;
+        }
+        .picker-col .arrow {
+            font-size: 14px;
+            color: #ccc;
+            cursor: pointer;
+            padding: 4px;
+            user-select: none;
+        }
+        .voice-input {
+            background: #F0F0F0;
+            border-radius: 12px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+        }
+        .voice-input svg { width: 20px; height: 20px; }
+        .repeat-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .repeat-tag {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid #E0E0E0;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+            background: #fff;
+            user-select: none;
+        }
+        .repeat-tag.active {
+            border-color: #5ECFB5;
+            background: #E8F8F5;
+            color: #5ECFB5;
+            font-weight: 600;
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .news-page { background: #F7F8FA; }
+        .news-sub-tabs {
+            display: flex;
+            background: #fff;
+            padding: 8px 16px;
+            gap: 8px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .news-sub-tab {
+            flex: 1;
+            padding: 8px 0;
+            border: none;
+            border-radius: 16px;
+            background: #F5F5F5;
+            font-size: 13px;
+            color: #666;
+            cursor: pointer;
+        }
+        .news-sub-tab.active {
+            background: #E8F8F5;
+            color: #5ECFB5;
+            font-weight: 600;
+        }
+        .news-view-panel { display: none; }
+        .news-view-panel.active { display: block; }
+        .search-bar {
+            padding: 12px 16px;
+            background: #fff;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .search-input {
+            flex: 1;
+            height: 36px;
+            background: #F5F5F5;
+            border-radius: 18px;
+            border: none;
+            padding: 0 16px;
+            font-size: 14px;
+            outline: none;
+        }
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid #E0E0E0;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #666;
+            background: #fff;
+            cursor: pointer;
+        }
+        .filter-btn.active {
+            border-color: #5ECFB5;
+            color: #5ECFB5;
+            background: #E8F8F5;
+        }
+        .news-tag {
+            display: inline-block;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-bottom: 4px;
+            background: #E8F8F5;
+            color: #5ECFB5;
+        }
+        .news-empty {
+            text-align: center;
+            padding: 40px 16px;
+            color: #999;
+            font-size: 14px;
+        }
+        .news-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 500;
+            padding: 16px;
+        }
+        .news-modal.active { display: flex; }
+        .news-modal-box {
+            width: 100%;
+            max-width: 320px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 18px 16px;
+        }
+        .news-modal-box h3 {
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+        .filter-group { margin-bottom: 16px; }
+        .filter-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .filter-option {
+            padding: 6px 12px;
+            border-radius: 16px;
+            border: 1px solid #E0E0E0;
+            background: #fff;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .filter-option.active {
+            border-color: #5ECFB5;
+            background: #E8F8F5;
+            color: #5ECFB5;
+            font-weight: 600;
+        }
+        .news-modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .news-modal-actions button {
+            flex: 1;
+            padding: 10px 0;
+            border-radius: 20px;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .news-modal-reset {
+            background: #F5F5F5;
+            color: #666;
+        }
+        .news-modal-confirm {
+            background: #5ECFB5;
+            color: #fff;
+        }
+        .hot-scroll.expanded {
+            flex-wrap: wrap;
+        }
+        .hot-scroll.expanded .hot-card {
+            width: calc(50% - 6px);
+        }
+        .hot-scroll.expanded .hot-card img {
+            width: 100%;
+        }
+        .category-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            background: #fff;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .category-tabs::-webkit-scrollbar { display: none; }
+        .cat-tab {
+            padding: 6px 14px;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #666;
+            background: #F5F5F5;
+            white-space: nowrap;
+            cursor: pointer;
+            border: none;
+            user-select: none;
+        }
+        .cat-tab.active {
+            background: #5ECFB5;
+            color: #fff;
+            font-weight: 600;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 16px 8px;
+        }
+        .section-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        .section-header .more-link {
+            font-size: 12px;
+            color: #999;
+            cursor: pointer;
+        }
+        .hot-scroll {
+            display: flex;
+            gap: 12px;
+            padding: 0 16px 16px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .hot-scroll::-webkit-scrollbar { display: none; }
+        .hot-card {
+            width: 140px;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .hot-card img {
+            width: 140px;
+            height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #E8E8E8;
+        }
+        .hot-card .hot-title {
+            font-size: 12px;
+            color: #333;
+            margin-top: 6px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .detail-page { background: #fff; }
+        #page-news-detail {
+            padding-bottom: 70px;
+        }
+        body.news-detail-open .global-bottom-nav {
+            display: none !important;
+        }
+        .detail-content {
+            padding: 20px 16px;
+        }
+        .detail-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+        .detail-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 16px;
+        }
+        .detail-body {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #333;
+        }
+        .detail-body p {
+            margin-bottom: 12px;
+            text-indent: 2em;
+        }
+    .detail-actions-bar {
+        position: absolute; 
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%; /* 强制占满父级宽度 */
+        height: 60px;
+        background: #fff;
+        border-top: 1px solid #E8E8E8;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding-bottom: 20px;
+        /* 新增：防止被父级 overflow:hidden 裁剪 */
+        z-index: 10;
+    }
+        .detail-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+        }
+        .detail-action svg { width: 22px; height: 22px; transition: all 0.2s; }
+        .detail-action span { font-size: 10px; color: #666; transition: all 0.2s; }
+        .detail-action.active span { color: #5ECFB5; }
+        .detail-action.active svg { stroke: #5ECFB5; fill: #5ECFB5; }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .tag-red {
+            background: #FFEBEE;
+            color: #E53935;
+        }
+        .tag-green {
+            background: #E8F5E9;
+            color: #43A047;
+        }
+        .toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+        #page-chat-history { padding: 16px; }
+        .history-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+        .history-item .history-question {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+        }
+        .history-item .history-time {
+            font-size: 11px;
+            color: #999;
+        }
+        .empty-history {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            font-size: 14px;
+            gap: 12px;
+            padding: 40px 0;
+        }
+        .empty-history svg {
+            width: 60px;
+            height: 60px;
+            fill: #e0e0e0;
+        }
+    
+        .nav-item:active {
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+</style>
+<base target="_blank">
+<base target="_blank">
+</head>
+<body data-active-module="baixiaotang">
+
+<div class="phone-frame">
+    <div class="phone-screen">
+        <div class="status-bar">
+            <span class="time">9:30</span>
+            <div class="icons">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C7.46 3 3.34 4.78.29 7.67c-.18.18-.29.43-.29.71 0 .28.11.53.29.71l11 11c.39.39 1.02.39 1.41 0l11-11c.18-.18.29-.43.29-.71 0-.28-.11-.53-.29-.71C20.66 4.78 16.54 3 12 3z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.67 4H14V2h-4v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"/></svg>
+            </div>
+        </div>
+        <div class="toast" id="toast"></div>
+        <div class="bottom-nav global-bottom-nav">
+            <div class="nav-item active" data-nav-module="baixiaotang"><div class="icon">💡</div><div>百晓堂</div></div>
+            <div class="nav-item" data-nav-module="wanhua"><div class="icon">📺</div><div>万花筒</div></div>
+            <div class="nav-item" data-nav-module="gongxuetang"><div class="icon">🌿</div><div>共学堂</div></div>
+            <div class="nav-item" data-nav-module="chuanjia"><div class="icon">📤</div><div>传家录</div></div>
+            <div class="nav-item" data-nav-module="ziliudi"><div class="icon">🏠</div><div>自留地</div></div>
+        </div>
+        <div class="page" id="page-home" style="display: flex;">
+            <div class="nav-bar">
+                <span class="title">百晓堂</span>
+            </div>
+            <div class="home-content">
+                <div class="banner-slider" data-page="page-news-list">
+                    <img src="https://picsum.photos/400/160?random=1" alt="银龄行动 志愿风采">
+                    <div class="banner-dots">
+                        <div class="dot active"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+                <div class="section-title">
+                    常用功能
+                    <span class="more"></span>
+                </div>
+                <div class="feature-grid">
+                    <div class="feature-card" data-page="page-chat">
+                        <div class="icon-bg" style="background: #E8F8F5;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#5ECFB5" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <span class="label">AI问答</span>
+                        <span class="desc">智能助手解疑惑</span>
+                    </div>
+                    <div class="feature-card" data-page="page-remind-list">
+                        <div class="icon-bg" style="background: #FFF3E0;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#FF9800" stroke-width="2"><circle cx="12" cy="13" r="9"/><path d="M12 7v6l3 3"/></svg>
+                        </div>
+                        <span class="label">每日提醒</span>
+                        <span class="desc">学习计划不错过</span>
+                    </div>
+                    <div class="feature-card" data-page="page-news-list">
+                        <div class="icon-bg" style="background: #E3F2FD;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+                        </div>
+                        <span class="label">便民资讯</span>
+                        <span class="desc">热点新闻早知道</span>
+                    </div>
+                </div>
+                <div class="section-title">
+                    推荐资讯
+                    <span class="more" data-page="page-news-list">查看更多 &gt;</span>
+                </div>
+                <div class="news-item" data-news-id="1">
+                    <img class="news-img" src="https://picsum.photos/100/75?random=2" alt="养老服务消费补贴政策">
+                    <div class="news-info">
+                        <div class="news-title">国家推出养老服务消费补贴政策</div>
+                        <div class="news-meta">
+                            <span>人民日报</span>
+                            <span>2小时前</span>
+                            <span>1.2万阅读</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="news-item" data-news-id="2">
+                    <img class="news-img" src="https://picsum.photos/100/75?random=3" alt="春季养生指南">
+                    <div class="news-info">
+                        <div class="news-title">春季养生：中老年人饮食调理指南</div>
+                        <div class="news-meta">
+                            <span>健康时报</span>
+                            <span>5小时前</span>
+                            <span>8563阅读</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-chat">
+            <div class="nav-bar">
+                <div class="back-btn" data-back="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <span class="title">AI问答</span>
+                <span class="right-btn" data-page="page-chat-history">历史</span>
+            </div>
+            <div class="chat-container" id="chat-messages">
+            </div>
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" placeholder="想跟TA说点什么呢" id="chat-input">
+                <button class="send-btn" id="send-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="page" id="page-chat-history">
+            <div class="nav-bar">
+                <div class="back-btn" data-back="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <span class="title">聊天历史</span>
+            </div>
+            <div id="history-list">
+                <div class="empty-history">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
+                    <span>暂无聊天记录</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="page rating-page" id="page-rating">
+            <div class="nav-bar">
+                <div class="back-btn" data-back="true" data-back-to="page-chat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <span class="title">评价</span>
+            </div>
+            <div style="flex:1; display:flex; align-items:center; justify-content:center; padding: 20px;">
+                <div class="rating-card">
+                    <h3>请对这个智能问答打分</h3>
+                    <div class="subtitle">点击星星以评价</div>
+                    <div class="stars" id="star-container">
+                        <div class="star active" data-rating="1"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                        <div class="star active" data-rating="2"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                        <div class="star active" data-rating="3"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                        <div class="star active" data-rating="4"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                        <div class="star" data-rating="5"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+                    </div>
+                    <textarea class="feedback-input" placeholder="留下你的反馈（可选）"></textarea>
+                    <div class="btn-group">
+                        <button class="btn btn-cancel" data-back="true">取消</button>
+                        <button class="btn btn-confirm" id="btn-submit-rating">确定</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="page-remind-list">
+            <div class="nav-bar">
+                <div class="back-btn" data-back="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <span class="title">每日提醒</span>
+            </div>
+            <div class="remind-list" id="remind-list-container">
+                <div style="font-size: 13px; color: #999; margin-bottom: 12px; font-weight: 500;">今日提醒</div>
+                <div class="remind-card orange">
+                    <div class="remind-icon orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#FF9800" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <div class="remind-info">
+                        <div class="remind-name">血压测量</div>
+                        <div class="remind-time">今日 8:00</div>
+                    </div>
+                    <div class="remind-toggle active" data-toggle="true"></div>
+                </div>
+                <div class="remind-card green">
+                    <div class="remind-icon green">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/><path d="M12 8v8M8 12h8"/></svg>
+                    </div>
+                    <div class="remind-info">
+                        <div class="remind-name">服用阿司匹林</div>
+                        <div class="remind-time">今日 12:30</div>
+                    </div>
+                    <div class="remind-toggle active" data-toggle="true"></div>
+                </div>
+                <div class="remind-card blue">
+                    <div class="remind-icon blue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    </div>
+                    <div class="remind-info">
+                        <div class="remind-name">户外活动</div>
+                        <div class="remind-time">今日 13:30</div>
+                    </div>
+                    <div class="remind-toggle" data-toggle="true"></div>
+                </div>
+                <div class="remind-card purple">
+                    <div class="remind-icon purple">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#9C27B0" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </div>
+                    <div class="remind-info">
+                        <div class="remind-name">阅读时光</div>
+                        <div class="remind-time">今日 20:00</div>
+                    </div>
+                    <div class="remind-toggle active" data-toggle="true"></div>
+                </div>
+            </div>
+            <button class="add-btn" data-page="page-remind-new">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+        </div>
+
+        <div class="page form-page" id="page-remind-new">
+            <div class="nav-bar">
+                <div class="back-btn" data-back="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <span class="title">新建提醒</span>
+                <span class="right-btn" id="save-remind">保存</span>
+            </div>
+            <div class="form-group">
+                <label>提醒名称</label>
+                <input type="text" id="remind-name" placeholder="例如：吃药、测量血压">
+            </div>
+            <div class="form-group">
+                <label>提醒日期</label>
+                <div class="date-picker">
+                    <div class="picker-col">
+                        <div class="arrow up" id="date-day-up">▲</div>
+                        <div class="value" id="date-day">15</div>
+                        <div class="arrow down" id="date-day-down">▼</div>
+                        <div class="label">日</div>
+                    </div>
+                    <div class="picker-col">
+                        <div class="arrow up" id="date-month-up">▲</div>
+                        <div class="value" id="date-month">4</div>
+                        <div class="arrow down" id="date-month-down">▼</div>
+                        <div class="label">月</div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>提醒时间</label>
+                <div class="time-picker">
+                    <div class="picker-col">
+                        <div class="arrow up" id="time-hour-up">▲</div>
+                        <div class="value" id="time-hour">14</div>
+                        <div class="arrow down" id="time-hour-down">▼</div>
+                        <div class="label">时</div>
+                    </div>
+                    <div class="picker-col">
+                        <div class="arrow up" id="time-minute-up">▲</div>
+                        <div class="value" id="time-minute">30</div>
+                        <div class="arrow down" id="time-minute-down">▼</div>
+                        <div class="label">分</div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>提醒类型（可选）</label>
+                <div class="repeat-options">
+                    <div class="repeat-tag">健康</div>
+                    <div class="repeat-tag">饮食</div>
+                    <div class="repeat-tag">运动</div>
+                    <div class="repeat-tag">用药</div>
+                    <div class="repeat-tag">其他</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page news-page" id="page-news-list">
+            <div class="nav-bar">
+                <div class="back-btn" data-back="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <span class="title">便民资讯</span>
+            </div>
+            <div class="news-sub-tabs" id="newsSubTabs">
+                <button type="button" class="news-sub-tab active" data-news-view="list">全部资讯</button>
+                <button type="button" class="news-sub-tab" data-news-view="collect">收藏</button>
+                <button type="button" class="news-sub-tab" data-news-view="browse">浏览记录</button>
+            </div>
+            <div class="news-view-panel active" id="newsListPanel">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="newsSearchInput" placeholder="搜索资讯标题、来源...">
+                <button class="filter-btn" id="newsFilterBtn" type="button">筛选</button>
+            </div>
+            <div class="category-tabs" id="newsCategoryTabs">
+                <button class="cat-tab active" type="button" data-category="全部">全部</button>
+                <button class="cat-tab" type="button" data-category="养老政策">养老政策</button>
+                <button class="cat-tab" type="button" data-category="健康养生">健康养生</button>
+                <button class="cat-tab" type="button" data-category="生活便民">生活便民</button>
+                <button class="cat-tab" type="button" data-category="科技科普">科技科普</button>
+                <button class="cat-tab" type="button" data-category="文化娱乐">文化娱乐</button>
+            </div>
+            <div class="section-header">
+                <h3>热门资讯</h3>
+                <span class="more-link" id="newsHotMore">更多</span>
+            </div>
+            <div class="hot-scroll" id="newsHotScroll"></div>
+            <div class="section-header">
+                <h3 id="newsLatestTitle">最新资讯</h3>
+            </div>
+            <div style="padding: 0 16px;" id="newsListContainer"></div>
+            </div>
+            <div class="news-view-panel" id="newsCollectPanel" style="padding: 12px 16px;">
+                <div id="newsCollectContainer"></div>
+            </div>
+            <div class="news-view-panel" id="newsBrowsePanel" style="padding: 12px 16px;">
+                <div id="newsBrowseContainer"></div>
+            </div>
+        </div>
+
+        <!-- 资讯筛选弹窗 -->
+        <div class="news-modal" id="newsFilterModal">
+            <div class="news-modal-box">
+                <h3>筛选资讯</h3>
+                <div class="filter-group">
+                    <div class="filter-label">排序方式</div>
+                    <div class="filter-options" id="newsSortOptions">
+                        <button class="filter-option active" type="button" data-sort="latest">最新发布</button>
+                        <button class="filter-option" type="button" data-sort="reads">最多阅读</button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-label">发布时间</div>
+                    <div class="filter-options" id="newsTimeOptions">
+                        <button class="filter-option active" type="button" data-time="all">不限</button>
+                        <button class="filter-option" type="button" data-time="day">今天</button>
+                        <button class="filter-option" type="button" data-time="week">本周</button>
+                        <button class="filter-option" type="button" data-time="month">本月</button>
+                    </div>
+                </div>
+                <div class="news-modal-actions">
+                    <button class="news-modal-reset" id="newsFilterReset" type="button">重置</button>
+                    <button class="news-modal-confirm" id="newsFilterConfirm" type="button">确定</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="page detail-page" id="page-news-detail">
+            <div class="nav-bar">
+                <div class="back-btn" data-back="true" data-back-to="page-news-list">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+                </div>
+                <span class="title">资讯详情</span>
+            </div>
+            <div class="detail-content">
+                <h1 class="detail-title">国家推出养老服务消费补贴政策</h1>
+                <div class="detail-meta">
+                    <span>人民日报</span>
+                    <span>2小时前</span>
+                    <span>1.2万阅读</span>
+                </div>
+                <div class="detail-body">
+                    <p>近日，国家民政部、财政部联合发布《关于完善养老服务消费补贴政策的指导意见》，明确将进一步扩大养老服务消费补贴覆盖范围，提高补贴标准，切实减轻老年人养老服务消费负担。</p>
+                    <p>根据政策要求，各地要结合实际情况，建立健全养老服务消费补贴制度，对城乡低保家庭、特困人员、高龄独居老人等特殊困难老年群体购买居家养老、社区养老、机构养老等服务给予补贴支持。补贴标准将根据当地经济发展水平、养老服务价格等因素动态调整，原则上不低于服务费用的30%。</p>
+                    <p>同时，政策鼓励各地创新补贴方式，推行"服务券""时间银行"等多元化补贴形式，提高补贴资金使用效率。此外，还将加强对养老服务机构的监管，确保补贴资金真正用于提升养老服务质量，保障老年人合法权益。</p>
+                    <p>业内专家表示，此次政策的出台将有效激发养老服务消费市场活力，推动养老服务产业高质量发展，让更多老年人享受到优质、便捷、实惠的养老服务，不断提升老年人的获得感、幸福感和安全感。</p>
+                </div>
+            </div>
+            <div class="detail-actions-bar">
+                <div class="detail-action" id="action-like">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <span>点赞</span>
+                </div>
+                <div class="detail-action" id="action-collect">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+                    <span>收藏</span>
+                </div>
+                <div class="detail-action" id="action-share">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                    <span>分享</span>
+                </div>
+                <div class="detail-action" id="action-comment">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    <span>评论</span>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<script>
+    const baseUrl = 'https://open.bigmodel.cn/api/paas/v4';
+    const model = 'glm-4-flash';
+    const apiKey = '28d5ba1e3d96419e90d68cc184ab78b7.UoU73I8lCTKPGw1v';
+
+    let chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+    let currentQuestion = '';
+    let currentAnswer = '';
+    let selectStar = 3;
+    let likeStatus = false;
+    let collectStatus = false;
+    let currentNewsId = null;
+
+    const HOT_DISPLAY_LIMIT = 4;
+    const newsArticles = [
+        {
+            id: 1,
+            title: '国家推出养老服务消费补贴政策',
+            category: '养老政策',
+            source: '人民日报',
+            time: '2小时前',
+            hoursAgo: 2,
+            reads: '1.2万',
+            readNum: 12000,
+            img: 'https://picsum.photos/100/75?random=2',
+            hot: true,
+            body: [
+                '近日，国家民政部、财政部联合发布《关于完善养老服务消费补贴政策的指导意见》，明确将进一步扩大养老服务消费补贴覆盖范围，提高补贴标准，切实减轻老年人养老服务消费负担。',
+                '根据政策要求，各地要结合实际情况，建立健全养老服务消费补贴制度，对城乡低保家庭、特困人员、高龄独居老人等特殊困难老年群体购买居家养老、社区养老、机构养老等服务给予补贴支持。',
+                '同时，政策鼓励各地创新补贴方式，推行"服务券""时间银行"等多元化补贴形式，提高补贴资金使用效率，确保补贴资金真正用于提升养老服务质量。'
+            ]
+        },
+        {
+            id: 2,
+            title: '春季养生：中老年人饮食调理指南',
+            category: '健康养生',
+            source: '健康时报',
+            time: '5小时前',
+            hoursAgo: 5,
+            reads: '8563',
+            readNum: 8563,
+            img: 'https://picsum.photos/100/75?random=3',
+            hot: true,
+            body: [
+                '春季是万物复苏的季节，也是中老年人调整饮食、增强体质的关键时期。专家建议，春季饮食应遵循"减酸增甘、养肝健脾"的原则。',
+                '日常可多食用菠菜、芹菜、山药、红枣等时令食材，适量补充优质蛋白，少吃油腻生冷食物，帮助提升免疫力和消化能力。',
+                '同时要注意规律进餐、细嚼慢咽，结合适度运动，才能更好适应季节变化，保持身体健康。'
+            ]
+        },
+        {
+            id: 3,
+            title: '2025年养老金调整方案公布 这些人受益最多',
+            category: '养老政策',
+            source: '新华社',
+            time: '3小时前',
+            hoursAgo: 3,
+            reads: '5.6万',
+            readNum: 56000,
+            img: 'https://picsum.photos/140/100?random=4',
+            hot: true,
+            body: [
+                '2025年基本养老金调整方案正式公布，将继续采取定额调整、挂钩调整和适当倾斜相结合的办法。',
+                '高龄退休人员、艰苦边远地区退休人员等群体将享受更多倾斜支持，确保待遇水平稳步提高。',
+                '各地将结合本地实际制定具体实施方案，确保调整待遇及时足额发放到位。'
+            ]
+        },
+        {
+            id: 4,
+            title: '老年人防诈骗指南：守住钱袋子 安享晚年',
+            category: '生活便民',
+            source: '平安日报',
+            time: '8小时前',
+            hoursAgo: 8,
+            reads: '4.2万',
+            readNum: 42000,
+            img: 'https://picsum.photos/140/100?random=5',
+            hot: true,
+            body: [
+                '针对老年人常见的保健品诈骗、投资理财诈骗、冒充亲友诈骗等手法，警方发布最新防骗指南。',
+                '提醒老年朋友不要轻信陌生来电和短信链接，不向不明账户转账，遇事多与子女或社区工作人员商量。',
+                '如遇可疑情况，可第一时间拨打反诈热线或向社区求助，共同守护养老资金安全。'
+            ]
+        },
+        {
+            id: 5,
+            title: '适老化改造补贴申请流程 一文看懂',
+            category: '养老政策',
+            source: '民政发布',
+            time: '10小时前',
+            hoursAgo: 10,
+            reads: '3.8万',
+            readNum: 38000,
+            img: 'https://picsum.photos/140/100?random=6',
+            hot: true,
+            body: [
+                '居家适老化改造补贴申请流程进一步简化，符合条件的老年人可通过社区或线上平台提交申请。',
+                '改造内容涵盖防滑处理、安装扶手、适老家具配置等项目，部分地区还可享受上门评估服务。',
+                '申请时需准备身份证明、居住证明等材料，审核通过后即可按标准领取补贴。'
+            ]
+        },
+        {
+            id: 6,
+            title: '老年大学新增课程 智能手机使用教学受欢迎',
+            category: '文化娱乐',
+            source: '老年教育报',
+            time: '12小时前',
+            hoursAgo: 12,
+            reads: '2.9万',
+            readNum: 29000,
+            img: 'https://picsum.photos/140/100?random=7',
+            hot: true,
+            body: [
+                '多地老年大学新增智能手机应用、线上挂号、短视频制作等课程，报名热度持续攀升。',
+                '课程采用小班教学和一对一辅导相结合的方式，帮助老年人跨越"数字鸿沟"。',
+                '学员表示，学会使用手机后，生活缴费、联系亲友、获取资讯都更加方便了。'
+            ]
+        },
+        {
+            id: 7,
+            title: '国家医保局：将更多老年慢性病用药纳入医保',
+            category: '健康养生',
+            source: '央视新闻',
+            time: '1小时前',
+            hoursAgo: 1,
+            reads: '3.5万',
+            readNum: 35000,
+            img: 'https://picsum.photos/100/75?random=8',
+            hot: false,
+            body: [
+                '国家医保局发布通知，将进一步扩大老年慢性病用药保障范围，降低患者用药负担。',
+                '高血压、糖尿病等常见老年慢性病的常用药品将加快纳入医保报销目录。',
+                '各地医保部门将优化报销流程，推动定点药店和医疗机构提供更加便捷的结算服务。'
+            ]
+        },
+        {
+            id: 8,
+            title: '社区养老服务中心全覆盖 居家养老更方便',
+            category: '养老政策',
+            source: '新京报',
+            time: '3小时前',
+            hoursAgo: 3,
+            reads: '2.1万',
+            readNum: 21000,
+            img: 'https://picsum.photos/100/75?random=9',
+            hot: false,
+            body: [
+                '全国多个城市实现社区养老服务中心全覆盖，为老年人提供助餐、助洁、助医等多样化服务。',
+                '服务中心还定期组织健康讲座、文娱活动和康复训练，丰富老年人社区生活。',
+                '未来将继续推动资源下沉，让老年人在家门口就能享受优质养老服务。'
+            ]
+        },
+        {
+            id: 9,
+            title: '老年人免费体检政策升级 增加多项检查项目',
+            category: '健康养生',
+            source: '健康报',
+            time: '6小时前',
+            hoursAgo: 6,
+            reads: '1.8万',
+            readNum: 18000,
+            img: 'https://picsum.photos/100/75?random=10',
+            hot: false,
+            body: [
+                '65岁以上老年人免费体检政策迎来升级，新增骨密度检测、认知功能筛查等项目。',
+                '体检结果将同步录入健康档案，便于社区医生开展后续随访和健康管理。',
+                '老年人可通过社区预约或线上平台登记，选择就近医疗机构参加体检。'
+            ]
+        },
+        {
+            id: 10,
+            title: '智能手机适老化标准发布 界面更大更清晰',
+            category: '科技科普',
+            source: '科技日报',
+            time: '1天前',
+            hoursAgo: 24,
+            reads: '1.5万',
+            readNum: 15000,
+            img: 'https://picsum.photos/100/75?random=11',
+            hot: false,
+            body: [
+                '工信部发布智能手机适老化新标准，要求厂商提供大字体、高对比度、简化操作等模式。',
+                '新标准还强调减少弹窗广告和误导性跳转，提升老年人使用体验和信息安全性。',
+                '主流品牌已表示将在新系统中逐步落实相关改造。'
+            ]
+        },
+        {
+            id: 11,
+            title: '社区合唱团大赛启动 丰富银龄文化生活',
+            category: '文化娱乐',
+            source: '文化周刊',
+            time: '2天前',
+            hoursAgo: 48,
+            reads: '9800',
+            readNum: 9800,
+            img: 'https://picsum.photos/100/75?random=12',
+            hot: false,
+            body: [
+                '全市社区合唱团大赛正式启动，面向各街道和社区老年文艺团队开放报名。',
+                '比赛设经典红歌、民族声乐等组别，旨在展示银龄风采，促进邻里交流。',
+                '获奖团队将获得社区文化站提供的排练场地和演出机会支持。'
+            ]
+        },
+        {
+            id: 12,
+            title: '一键叫车服务接入社区 老人出行更省心',
+            category: '生活便民',
+            source: '都市服务报',
+            time: '3天前',
+            hoursAgo: 72,
+            reads: '7600',
+            readNum: 7600,
+            img: 'https://picsum.photos/100/75?random=13',
+            hot: false,
+            body: [
+                '多个社区接入"一键叫车"助老出行服务，老年居民可通过社区热线或智能终端预约车辆。',
+                '服务优先安排熟悉老年乘客需求的司机，并提供上门协助上下车支持。',
+                '社区工作人员表示，该服务有效解决了老年人不会使用打车软件的实际困难。'
+            ]
+        }
+    ];
+
+    let newsListState = {
+        keyword: '',
+        category: '全部',
+        sort: 'latest',
+        timeRange: 'all',
+        showAllHot: false,
+        filterActive: false,
+        view: 'list'
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initPageSwitch();
+        initChat();
+        initRating();
+        initRemind();
+        initNewsList();
+        initNewsDetail();
+        initDateTimePicker();
+        renderChatHistory();
+        var urlNewsId = new URLSearchParams(location.search).get('newsId');
+        if (urlNewsId && getNewsById(urlNewsId)) {
+            openNewsDetail(urlNewsId, 'page-news-list');
+        }
+    });
+
+    function showToast(text) {
+        const t = document.getElementById('toast');
+        t.textContent = text;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 1500);
+    }
+
+    function updateGlobalBottomNav(pageId) {
+        const hideNav = pageId === 'page-news-detail';
+        document.body.classList.toggle('news-detail-open', hideNav);
+        const nav = document.querySelector('.global-bottom-nav');
+        if (nav) nav.style.display = hideNav ? 'none' : '';
+    }
+
+    function showPage(pageId) {
+        hideAllPages();
+        const page = document.getElementById(pageId);
+        if (page) page.style.display = 'flex';
+        updateGlobalBottomNav(pageId);
+        if (pageId === 'page-news-list') renderNewsPage();
+        if (window.XueWuyaVoiceMode) XueWuyaVoiceMode.scheduleRead(200);
+    }
+
+    function initPageSwitch() {
+        document.querySelectorAll('[data-page]').forEach(el => {
+            el.addEventListener('click', function() {
+                showPage(this.dataset.page);
+            });
+        });
+        document.querySelectorAll('[data-back]').forEach(el => {
+            el.addEventListener('click', function() {
+                showPage(this.dataset.backTo || 'page-home');
+            });
+        });
+        document.body.addEventListener('click', function(e) {
+            const newsEl = e.target.closest('[data-news-id]');
+            if (!newsEl) return;
+            const backPage = newsEl.closest('#page-home') ? 'page-home' : 'page-news-list';
+            openNewsDetail(newsEl.dataset.newsId, backPage);
+        });
+        updateGlobalBottomNav('page-home');
+    }
+    function hideAllPages() {
+        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+    }
+
+    function initChat() {
+        const chatWrap = document.getElementById('chat-messages');
+        const input = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        addChatMessage('ai', '你好！我是你的智能助手，有什么问题都可以问我哦～', true);
+
+        sendBtn.addEventListener('click', sendMsg);
+        input.addEventListener('keydown', e => {
+            if(e.key === 'Enter') sendMsg();
+        });
+
+        async function sendMsg() {
+            const text = input.value.trim();
+            if(!text) return;
+            currentQuestion = text;
+            input.value = '';
+            addChatMessage('user', text);
+            sendBtn.disabled = true;
+            try {
+                const res = await callGlmApi(text);
+                currentAnswer = res;
+                addChatMessage('ai', res);
+                addChatActionBtn();
+                saveChatToHistory(text, res);
+            } catch (err) {
+                addChatMessage('ai', '网络异常，请求失败，请稍后再试');
+                console.error(err);
+            } finally {
+                sendBtn.disabled = false;
+                chatWrap.scrollTop = chatWrap.scrollHeight;
+            }
+        }
+    }
+
+    async function callGlmApi(question) {
+        const resp = await fetch(`${baseUrl}/chat/completions`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: model,
+                messages: [{role: 'user', content: question}],
+                temperature: 0.7
+            })
+        });
+        if(!resp.ok) throw new Error('接口请求失败');
+        const data = await resp.json();
+        return data.choices[0].message.content;
+    }
+
+    function addChatMessage(type, content, isFirst = false) {
+        const wrap = document.getElementById('chat-messages');
+        const div = document.createElement('div');
+        div.className = `chat-bubble ${type}`;
+        if(type === 'ai' && !isFirst) {
+            div.innerHTML = `<div class="ai-label">AI助手</div>${content}`;
+        } else {
+            div.innerText = content;
+        }
+        wrap.appendChild(div);
+    }
+
+    function addChatActionBtn() {
+        const lastAi = document.querySelector('.chat-bubble.ai:last-child');
+        if(!lastAi) return;
+        const actionDiv = document.createElement('div');
+        actionDiv.className = 'chat-actions';
+        actionDiv.innerHTML = `
+            <button class="btn-rating">评价回答</button>
+            <button class="btn-regen">重新生成</button>
+        `;
+        lastAi.appendChild(actionDiv);
+
+        actionDiv.querySelector('.btn-rating').addEventListener('click', () => {
+            showPage('page-rating');
+        });
+        actionDiv.querySelector('.btn-regen').addEventListener('click', async () => {
+            const sendBtn = document.getElementById('send-btn');
+            sendBtn.disabled = true;
+            try {
+                const newAns = await callGlmApi(currentQuestion);
+                currentAnswer = newAns;
+                addChatMessage('ai', newAns);
+                addChatActionBtn();
+                saveChatToHistory(currentQuestion, newAns);
+            } catch {
+                addChatMessage('ai', '重新生成失败，请重试');
+            } finally {
+                sendBtn.disabled = false;
+                document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+            }
+        });
+    }
+
+    function saveChatToHistory(q, a) {
+        const now = new Date();
+        const timeStr = `${now.getMonth()+1}-${now.getDate()} ${now.getHours()}:${now.getMinutes()}`;
+        chatHistory.unshift({question: q, answer: a, time: timeStr});
+        if(chatHistory.length > 30) chatHistory.pop();
+        localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        renderChatHistory();
+    }
+    function renderChatHistory() {
+        const list = document.getElementById('history-list');
+        if(chatHistory.length === 0) {
+            list.innerHTML = `
+                <div class="empty-history">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
+                    <span>暂无聊天记录</span>
+                </div>
+            `;
+            return;
+        }
+        let html = '';
+        chatHistory.forEach(item => {
+            html += `
+                <div class="history-item">
+                    <div class="history-question">${item.question}</div>
+                    <div class="history-time">${item.time}</div>
+                </div>
+            `;
+        });
+        list.innerHTML = html;
+    }
+    // 1. 给添加按钮绑定事件
+    document.getElementById('add-remind-btn').addEventListener('click', () => {
+        // 模拟用户输入（实际项目可以改成弹出表单，这里先写死示例数据）
+        const newRemind = {
+            name: '新提醒',
+            time: '今日 19:00',
+            type: 'blue', // 颜色主题：orange/green/blue/purple
+            icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#2196F3" stroke-width="2">
+                <path d="M12 2v10m0 4h.01M19 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0z"/>
+            </svg>`
+        };
+
+        // 2. 创建提醒卡片 DOM
+        const remindCard = document.createElement('div');
+        remindCard.className = `remind-card ${newRemind.type}`;
+        remindCard.innerHTML = `
+            <div class="remind-icon ${newRemind.type}">
+                ${newRemind.icon}
+            </div>
+            <div class="remind-info">
+                <div class="remind-name">${newRemind.name}</div>
+                <div class="remind-time">${newRemind.time}</div>
+            </div>
+            <div class="remind-toggle active" data-toggle="true"></div>
+        `;
+
+        // 3. 把新卡片插入列表顶部
+        const remindList = document.getElementById('remind-list-container');
+        remindList.prepend(remindCard);
+
+        // 4. 给新卡片的开关绑定事件（和旧卡片保持一致）
+        remindCard.querySelector('.remind-toggle').addEventListener('click', function() {
+            this.classList.toggle('active');
+        });
+
+        // 可选：显示添加成功提示
+        const toast = document.getElementById('toast');
+        toast.textContent = '提醒添加成功！';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1500);
+    });
+    function initRating() {
+        const stars = document.querySelectorAll('.star');
+        const submitBtn = document.getElementById('btn-submit-rating');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectStar = Number(this.dataset.rating);
+                stars.forEach(s => s.classList.remove('active'));
+                for(let i = 0; i < selectStar; i++) {
+                    stars[i].classList.add('active');
+                }
+            });
+        });
+        submitBtn.addEventListener('click', () => {
+            const feedback = document.querySelector('.feedback-input').value;
+            showToast('评价成功，感谢你的反馈！');
+            setTimeout(() => {
+                showPage('page-chat');
+            }, 1000);
+        });
+    }
+
+    function initRemind() {
+        document.getElementById('save-remind').addEventListener('click', () => {
+            const name = document.getElementById('remind-name').value.trim();
+            if(!name) {
+                showToast('请输入提醒名称');
+                return;
+            }
+            showToast('提醒保存成功！');
+            showPage('page-remind-list');
+        });
+
+        document.querySelectorAll('.remind-toggle').forEach(t => {
+            t.addEventListener('click', () => {
+                t.classList.toggle('active');
+            });
+        });
+    }
+
+    function initDateTimePicker() {
+        const bind = (id, upId, downId, min, max) => {
+            const el = document.getElementById(id);
+            document.getElementById(upId).onclick = () => {
+                let v = +el.textContent;
+                el.textContent = v < max ? v + 1 : min;
+            };
+            document.getElementById(downId).onclick = () => {
+                let v = +el.textContent;
+                el.textContent = v > min ? v - 1 : max;
+            };
+        };
+        bind('date-day', 'date-day-up', 'date-day-down', 1, 31);
+        bind('date-month', 'date-month-up', 'date-month-down', 1, 12);
+        bind('time-hour', 'time-hour-up', 'time-hour-down', 0, 23);
+        bind('time-minute', 'time-minute-up', 'time-minute-down', 0, 59);
+    }
+
+    function initNewsDetail() {
+        const like = document.getElementById('action-like');
+        const collect = document.getElementById('action-collect');
+        const share = document.getElementById('action-share');
+        const comment = document.getElementById('action-comment');
+        like.onclick = () => {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            likeStatus = !likeStatus;
+            like.classList.toggle('active');
+            showToast(likeStatus ? '点赞成功' : '取消点赞');
+        };
+        collect.onclick = () => {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            const article = getNewsById(currentNewsId);
+            if (!article || !window.XueWuyaNewsStorage) return;
+            collectStatus = XueWuyaNewsStorage.toggleCollect(article);
+            collect.classList.toggle('active', collectStatus);
+            showToast(collectStatus ? '收藏成功' : '取消收藏');
+            if (newsListState.view === 'collect') renderNewsSavedLists();
+        };
+        share.onclick = () => {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            showToast('分享成功');
+        };
+        comment.onclick = () => {
+            if (window.XueWuyaAuth && XueWuyaAuth.isGuest()) {
+                XueWuyaAuth.showLoginRequiredModal();
+                return;
+            }
+            showToast('评论功能开发中');
+        };
+    }
+
+    function getNewsById(id) {
+        return newsArticles.find(function(item) { return String(item.id) === String(id); });
+    }
+
+    function matchNewsTimeRange(article, range) {
+        if (range === 'all') return true;
+        if (range === 'day') return article.hoursAgo <= 24;
+        if (range === 'week') return article.hoursAgo <= 24 * 7;
+        if (range === 'month') return article.hoursAgo <= 24 * 30;
+        return true;
+    }
+
+    function getFilteredNewsArticles() {
+        const keyword = newsListState.keyword.trim().toLowerCase();
+        return newsArticles.filter(function(article) {
+            const matchCategory = newsListState.category === '全部' || article.category === newsListState.category;
+            const matchKeyword = !keyword || (
+                article.title.toLowerCase().includes(keyword) ||
+                article.source.toLowerCase().includes(keyword) ||
+                article.category.toLowerCase().includes(keyword)
+            );
+            const matchTime = matchNewsTimeRange(article, newsListState.timeRange);
+            return matchCategory && matchKeyword && matchTime;
+        }).sort(function(a, b) {
+            if (newsListState.sort === 'reads') return b.readNum - a.readNum;
+            return a.hoursAgo - b.hoursAgo;
+        });
+    }
+
+    function renderNewsList() {
+        const filtered = getFilteredNewsArticles();
+        const hotArticles = filtered.filter(function(item) { return item.hot; });
+        const latestArticles = filtered.filter(function(item) { return !item.hot; });
+        const hotScroll = document.getElementById('newsHotScroll');
+        const listContainer = document.getElementById('newsListContainer');
+        const hotMore = document.getElementById('newsHotMore');
+        const latestTitle = document.getElementById('newsLatestTitle');
+        const filterBtn = document.getElementById('newsFilterBtn');
+
+        if (!hotScroll || !listContainer) return;
+
+        const visibleHot = newsListState.showAllHot ? hotArticles : hotArticles.slice(0, HOT_DISPLAY_LIMIT);
+
+        if (hotArticles.length === 0) {
+            hotScroll.innerHTML = '<div class="news-empty" style="width:100%;padding:20px 0;">暂无热门资讯</div>';
+        } else {
+            hotScroll.innerHTML = visibleHot.map(function(article) {
+                return `
+                    <div class="hot-card" data-news-id="${article.id}">
+                        <img src="${article.img}" alt="${article.title}">
+                        <div class="hot-title">${article.title}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        hotScroll.classList.toggle('expanded', newsListState.showAllHot);
+
+        if (hotMore) {
+            if (hotArticles.length <= HOT_DISPLAY_LIMIT) {
+                hotMore.style.display = 'none';
+            } else {
+                hotMore.style.display = '';
+                hotMore.textContent = newsListState.showAllHot ? '收起' : '更多';
+            }
+        }
+
+        if (latestTitle) {
+            latestTitle.textContent = newsListState.keyword || newsListState.category !== '全部' || newsListState.filterActive
+                ? '筛选结果'
+                : '最新资讯';
+        }
+
+        if (latestArticles.length === 0) {
+            listContainer.innerHTML = '<div class="news-empty">暂无符合条件的资讯</div>';
+        } else {
+            listContainer.innerHTML = latestArticles.map(function(article) {
+                return `
+                    <div class="news-item" data-news-id="${article.id}">
+                        <img class="news-img" src="${article.img}" alt="${article.title}">
+                        <div class="news-info">
+                            <span class="news-tag">${article.category}</span>
+                            <div class="news-title">${article.title}</div>
+                            <div class="news-meta">
+                                <span>${article.source}</span>
+                                <span>${article.time}</span>
+                                <span>${article.reads}阅读</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        if (filterBtn) {
+            filterBtn.classList.toggle('active', newsListState.filterActive);
+        }
+    }
+
+    function openNewsDetail(newsId, backPage) {
+        const article = getNewsById(newsId);
+        if (!article) return;
+
+        currentNewsId = article.id;
+        if (window.XueWuyaNewsStorage && !(window.XueWuyaAuth && XueWuyaAuth.isGuest())) {
+            XueWuyaNewsStorage.addBrowse(article);
+        }
+
+        document.querySelector('#page-news-detail .detail-title').textContent = article.title;
+        document.querySelector('#page-news-detail .detail-meta').innerHTML =
+            '<span>' + article.source + '</span><span>' + article.time + '</span><span>' + article.reads + '阅读</span>';
+        document.querySelector('#page-news-detail .detail-body').innerHTML =
+            article.body.map(function(p) { return '<p>' + p + '</p>'; }).join('');
+
+        const backBtn = document.querySelector('#page-news-detail [data-back]');
+        if (backBtn) backBtn.dataset.backTo = backPage || 'page-news-list';
+
+        likeStatus = false;
+        collectStatus = false;
+        document.getElementById('action-like').classList.remove('active');
+        document.getElementById('action-collect').classList.remove('active');
+        if (!(window.XueWuyaAuth && XueWuyaAuth.isGuest())) {
+            collectStatus = window.XueWuyaNewsStorage ? XueWuyaNewsStorage.isCollected(article.id) : false;
+            document.getElementById('action-collect').classList.toggle('active', collectStatus);
+        }
+
+        showPage('page-news-detail');
+    }
+
+    function renderNewsSavedItem(article) {
+        return `
+            <div class="news-item" data-news-id="${article.id}">
+                <img class="news-img" src="${article.img}" alt="${article.title}">
+                <div class="news-info">
+                    <div class="news-title">${article.title}</div>
+                    <div class="news-meta">
+                        <span>${article.source}</span>
+                        <span>${article.time}</span>
+                        <span>${article.reads}阅读</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderNewsSavedLists() {
+        const collectContainer = document.getElementById('newsCollectContainer');
+        const browseContainer = document.getElementById('newsBrowseContainer');
+        if (!collectContainer || !browseContainer || !window.XueWuyaNewsStorage) return;
+
+        const collects = XueWuyaNewsStorage.getCollects();
+        const browses = XueWuyaNewsStorage.getBrowseHistory();
+
+        collectContainer.innerHTML = collects.length
+            ? collects.map(renderNewsSavedItem).join('')
+            : '<div class="news-empty">暂无收藏资讯</div>';
+        browseContainer.innerHTML = browses.length
+            ? browses.map(renderNewsSavedItem).join('')
+            : '<div class="news-empty">暂无浏览记录</div>';
+    }
+
+    function switchNewsView(view) {
+        newsListState.view = view;
+        document.querySelectorAll('.news-sub-tab').forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.newsView === view);
+        });
+        document.getElementById('newsListPanel').classList.toggle('active', view === 'list');
+        document.getElementById('newsCollectPanel').classList.toggle('active', view === 'collect');
+        document.getElementById('newsBrowsePanel').classList.toggle('active', view === 'browse');
+        if (view === 'list') renderNewsList();
+        else renderNewsSavedLists();
+    }
+
+    function renderNewsPage() {
+        if (newsListState.view === 'list') renderNewsList();
+        else renderNewsSavedLists();
+    }
+
+    function initNewsList() {
+        const searchInput = document.getElementById('newsSearchInput');
+        const filterBtn = document.getElementById('newsFilterBtn');
+        const filterModal = document.getElementById('newsFilterModal');
+        const hotMore = document.getElementById('newsHotMore');
+        const categoryTabs = document.getElementById('newsCategoryTabs');
+        const newsSubTabs = document.getElementById('newsSubTabs');
+
+        renderNewsPage();
+
+        if (newsSubTabs) {
+            newsSubTabs.addEventListener('click', function(e) {
+                const tab = e.target.closest('[data-news-view]');
+                if (!tab) return;
+                switchNewsView(tab.dataset.newsView || 'list');
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                newsListState.keyword = this.value;
+                renderNewsList();
+            });
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    showToast(newsListState.keyword ? '已搜索相关资讯' : '请输入关键词');
+                }
+            });
+        }
+
+        if (categoryTabs) {
+            categoryTabs.addEventListener('click', function(e) {
+                const tab = e.target.closest('.cat-tab');
+                if (!tab) return;
+                categoryTabs.querySelectorAll('.cat-tab').forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                tab.classList.add('active');
+                newsListState.category = tab.dataset.category || '全部';
+                renderNewsList();
+            });
+        }
+
+        if (filterBtn && filterModal) {
+            filterBtn.addEventListener('click', function() {
+                filterModal.classList.add('active');
+            });
+            filterModal.addEventListener('click', function(e) {
+                if (e.target === filterModal) filterModal.classList.remove('active');
+            });
+        }
+
+        document.querySelectorAll('#newsSortOptions .filter-option').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#newsSortOptions .filter-option').forEach(function(item) {
+                    item.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        document.querySelectorAll('#newsTimeOptions .filter-option').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('#newsTimeOptions .filter-option').forEach(function(item) {
+                    item.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
+        document.getElementById('newsFilterReset').addEventListener('click', function() {
+            document.querySelector('#newsSortOptions .filter-option[data-sort="latest"]').click();
+            document.querySelector('#newsTimeOptions .filter-option[data-time="all"]').click();
+        });
+
+        document.getElementById('newsFilterConfirm').addEventListener('click', function() {
+            const sortBtn = document.querySelector('#newsSortOptions .filter-option.active');
+            const timeBtn = document.querySelector('#newsTimeOptions .filter-option.active');
+            newsListState.sort = sortBtn ? sortBtn.dataset.sort : 'latest';
+            newsListState.timeRange = timeBtn ? timeBtn.dataset.time : 'all';
+            newsListState.filterActive = newsListState.sort !== 'latest' || newsListState.timeRange !== 'all';
+            filterModal.classList.remove('active');
+            renderNewsList();
+            showToast('筛选已应用');
+        });
+
+        if (hotMore) {
+            hotMore.addEventListener('click', function() {
+                newsListState.showAllHot = !newsListState.showAllHot;
+                renderNewsList();
+                if (newsListState.showAllHot) {
+                    showToast('已显示全部热门资讯');
+                }
+            });
+        }
+    }
+</script>
+<script src="js/auth.js"></script>
+<script src="js/news-storage.js"></script>
+<script src="js/voice-mode.js"></script>
+<script src="js/nav.js"></script>
+</body>
+</html>

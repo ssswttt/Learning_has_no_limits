@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+  <rect width="160" height="160" rx="12" fill="#FFF8E1"/>
+  <ellipse cx="80" cy="100" rx="50" ry="20" fill="#FFD54F"/>
+  <circle cx="65" cy="70" r="18" fill="#FFD54F"/>
+  <circle cx="95" cy="70" r="18" fill="#FFD54F"/>
+  <text x="80" y="140" text-anchor="middle" fill="#F9A825" font-size="12" font-family="sans-serif">收藏配图</text>
+</svg>

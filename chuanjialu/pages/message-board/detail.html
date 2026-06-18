@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>传家录 - 留言详情</title>
+  <link rel="stylesheet" href="../../css/main.css">
+  <script>window.PAGE_CONFIG = { activeTab: "msg" };</script>
+</head>
+<body data-active-module="chuanjia">
+  <div class="phone page--msg-detail">
+    <div data-include="page-header"></div>
+    <div class="detail-page-title detail-page-title--with-back">
+      <a class="back-bar back-bar--overlay-title" href="list.html"><span class="back-bar__icon">←</span></a>
+      留言详情
+    </div>
+
+    <div class="phone__scroll" style="padding:16px 20px;">
+      <div class="detail-main-card">
+        <div class="detail-main-card__top">
+          <img class="detail-main-card__avatar" id="detailMsgAvatar" src="https://images.unsplash.com/photo-1557862921-37829c790f19?w=200&q=80" alt="">
+          <button type="button" class="btn-edit" id="btnMsgEdit" hidden>编辑</button>
+        </div>
+        <div class="detail-main-card__text" id="detailMsgText">家庭留言内容</div>
+        <div class="detail-main-card__time" id="detailMsgTime">2026/04/30 20:05</div>
+      </div>
+
+      <div class="action-btns">
+        <button type="button" class="action-btns__btn" id="btnReplyMsg">回复</button>
+        <button type="button" class="action-btns__btn" id="btnDeleteMsg" hidden>删除</button>
+        <button type="button" class="action-btns__btn" id="btnPinMsg">置顶</button>
+      </div>
+
+      <div class="reply-title">回复的留言</div>
+      <div id="replyList"></div>
+    </div>
+
+    <div class="overlay" id="replyOverlay">
+      <div class="bottom-sheet bottom-sheet--reply">
+        <div class="bottom-sheet__header">
+          <button type="button" id="replyCancel">取消</button>
+          <span id="replySheetTitle">回复留言</span>
+          <button type="button" id="replyConfirm">发送</button>
+        </div>
+        <textarea id="replyInput" class="reply-sheet__input" placeholder="写下你的回复…" rows="4"></textarea>
+      </div>
+    </div>
+
+    <div data-include="bottom-nav"></div>
+  </div>
+  <script src="../../../js/voice-mode.js"></script>
+    <script src="../../../js/auth.js"></script>
+  <script src="../../../js/nav.js"></script>
+    <script src="../../../js/family-avatars.js"></script>
+  <script src="../../js/app.js"></script>
+  <script src="../../js/interactions.js"></script>
+</body>
+</html>

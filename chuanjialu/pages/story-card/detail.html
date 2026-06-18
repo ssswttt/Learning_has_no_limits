@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>传家录 - 故事卡详情</title>
+  <link rel="stylesheet" href="../../css/main.css">
+  <script>window.PAGE_CONFIG = { activeTab: "photo" };</script>
+</head>
+<body data-active-module="chuanjia">
+  <div class="phone page--story-detail">
+    <div data-include="page-header"></div>
+
+    <div class="phone__scroll">
+      <div class="story-detail-wrap">
+        <div class="detail-title-row">
+          <a class="detail-title-row__back" href="list.html">
+            <span class="detail-title-row__back-icon">←</span>
+            <span>返回列表</span>
+          </a>
+          <h1 class="detail-title-row__title" id="detailTitle">家庭野炊日</h1>
+          <div class="detail-title-row__actions">
+            <button type="button" class="detail-title-row__edit" id="storyCardDetailEditBtn">编辑</button>
+            <button type="button" class="detail-title-row__delete" id="storyCardDetailDeleteBtn" hidden>删除</button>
+            <button type="button" class="detail-title-row__export">导出</button>
+          </div>
+        </div>
+        <img class="detail-hero" id="detailHero" src="https://images.unsplash.com/photo-1514890547357-a9ee288728e0?w=600&q=80" alt="家庭野炊日">
+
+        <div class="meta-row">
+          <span class="meta-row__icon">📍</span>
+          <span class="meta-row__text" id="detailLocation">河南省安阳市广益街道上马墩村751号</span>
+          <span class="meta-row__end">◎</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-row__icon">🕐</span>
+          <span class="meta-row__text" id="detailDate">09月19日</span>
+          <span class="meta-row__end">📅</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-row__icon">☺</span>
+          <div class="tags" id="detailMoodTags"><span class="tag-pill">开心</span><span class="tag-pill">激动</span></div>
+          <span class="meta-row__end">✎</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-row__icon">📝</span>
+          <span class="meta-row__text meta-row__text--muted" id="detailDescription">用简短的一句话描述这个故事卡……</span>
+          <span class="meta-row__end">✎</span>
+        </div>
+      </div>
+    </div>
+
+    <div data-include="bottom-nav"></div>
+  </div>
+  <script src="../../../js/voice-mode.js"></script>
+    <script src="../../../js/auth.js"></script>
+  <script src="../../../js/nav.js"></script>
+    <script src="../../../js/family-avatars.js"></script>
+  <script src="../../js/app.js"></script>
+  <script src="../../js/interactions.js"></script>
+</body>
+</html>

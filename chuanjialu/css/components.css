@@ -1,0 +1,87 @@
+/* ========== 统一页头（状态栏 + 顶部 Tab） ========== */
+.phone__header {
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 0;
+  z-index: 10;
+}
+
+/* ========== Status Bar（自留地式布局下隐藏模拟状态栏） ========== */
+.status-bar {
+  display: none;
+}
+
+.status-bar--light { color: #000; }
+
+.status-bar__icons {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.status-bar__signal {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 12px;
+}
+
+.status-bar__signal span {
+  width: 3px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.status-bar__signal span:nth-child(1) { height: 4px; }
+.status-bar__signal span:nth-child(2) { height: 6px; }
+.status-bar__signal span:nth-child(3) { height: 8px; }
+.status-bar__signal span:nth-child(4) { height: 10px; }
+
+.status-bar__battery {
+  width: 22px;
+  height: 11px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  position: relative;
+}
+
+.status-bar__battery::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: 3px;
+  width: 2px;
+  height: 5px;
+  background: currentColor;
+  border-radius: 0 1px 1px 0;
+}
+
+.status-bar__battery-fill {
+  position: absolute;
+  inset: 2px 4px 2px 2px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+/* ========== Top Tabs（全站统一） ========== */
+.top-tabs {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: var(--top-tabs-height);
+  border-bottom: 1px solid #eee;
+}
+
+.top-tabs__tab {
+  font-size: 15px;
+  color: #aaa;
+  padding: 6px 10px;
+  text-decoration: none;
+}
+
+.top-tabs__tab--active {
+  color: #488E7B;
+  font-weight: 700;
+  text-shadow: 0 1px 8px rgba(72, 142, 123, 0.35);
+}

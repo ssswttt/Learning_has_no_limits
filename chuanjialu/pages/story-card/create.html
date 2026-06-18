@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>传家录 - 故事卡创建</title>
+  <link rel="stylesheet" href="../../css/main.css">
+  <script>window.PAGE_CONFIG = { activeTab: "photo" };</script>
+</head>
+<body data-active-module="chuanjia">
+  <div class="phone page--story-create">
+    <div data-include="page-header"></div>
+
+    <div class="phone__scroll">
+      <div class="story-create-card" id="storyCardForm">
+        <div class="story-create-header" id="storyCreateHeader">
+          <a class="story-create-header__back" id="storyCardBackBtn" href="list.html">
+            <span class="story-create-header__back-icon">←</span>
+            <span>返回列表</span>
+          </a>
+          <button type="button" class="story-create-header__exit" id="storyCardExitBtn" hidden>退出</button>
+          <div class="story-create-header__title-wrap">
+            <input type="text" class="story-create-header__title-input" id="storyCardTitleInput" placeholder="故事卡标题" maxlength="50">
+            <button type="button" class="story-create-header__edit" id="storyCardTitleEdit" aria-label="编辑标题">✎</button>
+          </div>
+          <div class="story-create-header__actions">
+            <button type="button" class="story-create-header__save" id="storyCardSaveBtn">保存</button>
+            <button type="button" class="story-create-header__export">导出</button>
+          </div>
+        </div>
+        <button type="button" class="photo-upload" id="storyCardPhotoUpload">
+          <div class="photo-upload__placeholder">
+            <div class="photo-upload__icon">📷</div>
+            <span>添加照片</span>
+          </div>
+        </button>
+        <input type="file" accept="image/*" id="storyCardPhotoInput" hidden>
+
+        <button type="button" class="form-row" id="rowLocation">
+          <span class="form-row__icon">📍</span>
+          <span class="form-row__text" id="fieldLocationText">定位选择地点</span>
+          <span class="form-row__end">◎</span>
+        </button>
+        <button type="button" class="form-row" id="rowDate">
+          <span class="form-row__icon">🕐</span>
+          <span class="form-row__text" id="fieldDateText">请选择时间</span>
+          <span class="form-row__end">📅</span>
+        </button>
+        <div class="form-row form-row--inline" id="rowMood">
+          <span class="form-row__icon">☺</span>
+          <span class="form-row__text" id="fieldMoodText">请填写心情</span>
+          <input type="text" class="form-row__input" id="fieldMoodInput" placeholder="请填写心情，如：开心、激动" maxlength="80">
+          <button type="button" class="form-row__end form-row__edit-btn" id="fieldMoodEdit" aria-label="编辑心情">+</button>
+        </div>
+        <div class="form-row form-row--inline form-row--multiline" id="rowDesc">
+          <span class="form-row__icon">📝</span>
+          <span class="form-row__text" id="fieldDescText">用简短的一句话描述这个故事卡……</span>
+          <textarea class="form-row__input form-row__textarea" id="fieldDescInput" placeholder="用简短的一句话描述这个故事卡……" rows="2" maxlength="200"></textarea>
+          <button type="button" class="form-row__end form-row__edit-btn" id="fieldDescEdit" aria-label="编辑描述">✎</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 地址选择 -->
+    <div class="overlay" id="locationOverlay">
+      <div class="bottom-sheet bottom-sheet--tall">
+        <div class="bottom-sheet__header">
+          <button type="button" id="locationCancel">取消</button>
+          <span>选择地点</span>
+          <button type="button" id="locationConfirm">确定</button>
+        </div>
+        <div class="location-search-row">
+          <input type="text" id="locationInput" placeholder="输入位置">
+          <button type="button" class="btn-locate" id="btnLocate">◎ 定位</button>
+        </div>
+        <div class="bottom-sheet__map-wrap">
+          <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80" alt="地图">
+          <span class="map-pin">📍</span>
+        </div>
+        <p class="location-hint" id="locationHint"></p>
+      </div>
+    </div>
+
+    <!-- 日期选择 -->
+    <div class="overlay" id="dateOverlay">
+      <div class="bottom-sheet">
+        <div class="bottom-sheet__header">
+          <button type="button" id="dateCancel">取消</button>
+          <span>选择日期</span>
+          <button type="button" id="dateConfirm">确认</button>
+        </div>
+        <div class="date-picker" id="datePickerRoot">
+          <div class="date-picker__col" data-picker="year"></div>
+          <div class="date-picker__col" data-picker="month"></div>
+          <div class="date-picker__col" data-picker="day"></div>
+        </div>
+      </div>
+    </div>
+
+    <div data-include="bottom-nav"></div>
+  </div>
+  <script src="../../../js/voice-mode.js"></script>
+    <script src="../../../js/auth.js"></script>
+  <script src="../../../js/nav.js"></script>
+    <script src="../../../js/family-avatars.js"></script>
+  <script src="../../js/app.js"></script>
+  <script src="../../js/interactions.js"></script>
+</body>
+</html>

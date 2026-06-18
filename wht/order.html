@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的订单</title>
+    <link rel="stylesheet" href="wht-common.css">
+    <style>
+        /* 头部 */
+        .header {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        .back-btn {
+            font-size: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .header-title {
+            font-size: 17px;
+            color: #4CAF50;
+            font-weight: 500;
+        }
+
+        /* 订单 */
+        .order-header {
+            background: #fff;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-bar {
+            flex: 1;
+            background: #f0f0f0;
+            border-radius: 20px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-bar input {
+            border: none;
+            background: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .order-tab {
+            display: flex;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        .order-tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .order-tab-item.active {
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+        }
+
+        .order-card-item {
+            background: #fff;
+            margin: 12px;
+            padding: 12px;
+            border-radius: 12px;
+        }
+
+        /* 订单课程图片 - 去掉灰色背景 */
+        .order-course-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .order-course-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .order-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .action-btn.gray {
+            background: #eee;
+            color: #666;
+        }
+
+        .action-btn.green {
+            background: #4CAF50;
+            color: #fff;
+        }
+
+        .delay-date-text {
+            font-size: 12px;
+            color: #4CAF50;
+            margin-top: 6px;
+        }
+
+        .recommend-title {
+            margin: 20px 12px 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .recommend-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 12px;
+        }
+
+        .recommend-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .recommend-card:active {
+            transform: scale(0.98);
+        }
+
+        /* 推荐课程图片 - 去掉灰色背景 */
+        .recommend-img {
+            width: 100%;
+            height: 120px;
+            overflow: hidden;
+        }
+
+        .recommend-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .recommend-info {
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .reselect-tag {
+            text-align: center;
+            padding: 20px;
+            color: #4CAF50;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            padding: 60px 20px;
+            text-align: center;
+            color: #999;
+            font-size: 15px;
+        }
+
+        /* 通用模态框样式 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal.modal--top {
+            z-index: 400;
+        }
+
+        .modal-tip-text {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .modal-box--confirm h3 {
+            color: #333;
+        }
+
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px 24px 24px;
+            width: 340px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-box.modal-box--sm {
+            width: 300px;
+            padding: 20px 18px 16px;
+            border-radius: 16px;
+            text-align: left;
+        }
+
+        .modal-box--sm h3 {
+            font-size: 16px;
+            margin-bottom: 14px;
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        .modal-success-icon {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .modal-info--compact {
+            margin-bottom: 16px;
+            line-height: 1.7;
+        }
+
+        .modal-info--compact .modal-info-item {
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .modal-info--compact .modal-info-label {
+            width: 88px;
+        }
+
+        .modal-info--compact .modal-info-value {
+            font-weight: 500;
+        }
+
+        .modal-info--compact .modal-info-value.highlight {
+            color: #4CAF50;
+        }
+
+        .modal-actions--single {
+            justify-content: center;
+        }
+
+        .modal-actions--single button {
+            min-width: 120px;
+            padding: 9px 24px;
+            font-size: 14px;
+        }
+
+        .modal-box h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-info {
+            text-align: left;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+
+        .modal-info-item {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .modal-info-label {
+            width: 80px;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .modal-info-value {
+            color: #333;
+            flex: 1;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-actions button {
+            padding: 10px 28px;
+            border: none;
+            border-radius: 30px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .modal-actions .btn-confirm {
+            background: #4CAF50;
+            color: #fff;
+        }
+
+        .modal-actions .btn-cancel {
+            background: #eee;
+            color: #666;
+        }
+
+        /* 兴趣标签弹窗 */
+        .tag-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .tag-modal.active {
+            display: flex;
+        }
+
+        .tag-modal-content {
+            width: 360px;
+            background: #e2f3e9;
+            border-radius: 20px;
+            padding: 24px 20px;
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .tag-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 18px;
+            font-size: 26px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .tag-modal-title {
+            text-align: center;
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 22px;
+        }
+
+        .category-name {
+            font-weight: bold;
+            margin: 18px 0 10px;
+            font-size: 20px;
+            color: #333;
+        }
+
+        .tag-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .tag-btn {
+            padding: 8px 16px;
+            border-radius: 22px;
+            border: 1px solid #ccc;
+            background: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 90px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .tag-btn.active {
+            background: #d4edf9;
+            border-color: #4CAF50;
+        }
+    </style>
+</head>
+<body data-active-module="wanhua">
+    <!-- 顶部导航 -->
+    <div class="top-nav">
+        <div class="top-nav-item" onclick="window.location.href='index.html'">课程总览</div>
+        <div class="top-nav-item" onclick="window.location.href='study.html'">学习中心</div>
+        <div class="top-nav-item" onclick="goToUserWall()">作品墙</div>
+        <div class="top-nav-item active">我的订单</div>
+    </div>
+
+    <!-- 底部导航栏 -->
+        <nav class="global-bottom-nav">
+        <button type="button" class="nav-item" data-nav-module="baixiaotang"><span class="nav-icon">💡</span><span>百晓堂</span></button>
+        <button type="button" class="nav-item active" data-nav-module="wanhua"><span class="nav-icon">📺</span><span>万花筒</span></button>
+        <button type="button" class="nav-item" data-nav-module="gongxuetang"><span class="nav-icon">🌿</span><span>共学堂</span></button>
+        <button type="button" class="nav-item" data-nav-module="chuanjia"><span class="nav-icon">📤</span><span>传家录</span></button>
+        <button type="button" class="nav-item" data-nav-module="ziliudi"><span class="nav-icon">🏠</span><span>自留地</span></button>
+    </nav>
+
+    <div class="order-header">
+        <div class="search-bar"><span>🔍</span><input placeholder="搜索订单"></div>
+        <div style="color:#666;">筛选</div>
+        <div style="color:#666;">⋯</div>
+    </div>
+    <div class="order-tab">
+        <div class="order-tab-item active">全部</div>
+        <div class="order-tab-item">待付款</div>
+        <div class="order-tab-item">待开班</div>
+        <div class="order-tab-item">学习中</div>
+        <div class="order-tab-item">待评价</div>
+    </div>
+    <div id="orderList"></div>
+    <div class="recommend-title">更多推荐</div>
+    <div class="recommend-grid" id="recommendGrid"></div>
+    <div class="reselect-tag" id="openTag">不满意推荐，重选个人爱好标签</div>
+
+    <!-- 兴趣标签弹窗 -->
+    <div id="tagModal" class="tag-modal">
+        <div class="tag-modal-content">
+            <div class="tag-modal-close" id="closeModalBtn">×</div>
+            <div class="tag-modal-title">选择个人兴趣爱好标签</div>
+            <div class="category-name">书画</div>
+            <div class="tag-buttons" id="shuahua">
+                <span class="tag-btn" data-tag="水墨">水墨</span>
+                <span class="tag-btn" data-tag="工笔画">工笔画</span>
+                <span class="tag-btn" data-tag="油画">油画</span>
+                <span class="tag-btn" data-tag="素描">素描</span>
+                <span class="tag-btn" data-tag="简笔画">简笔画</span>
+                <span class="tag-btn" data-tag="水彩">水彩</span>
+                <span class="tag-btn" data-tag="木版画">木版画</span>
+            </div>
+            <div class="category-name">声乐</div>
+            <div class="tag-buttons" id="shengyue">
+                <span class="tag-btn" data-tag="美声">美声</span>
+                <span class="tag-btn" data-tag="流行">流行</span>
+                <span class="tag-btn" data-tag="乡村音乐">乡村音乐</span>
+                <span class="tag-btn" data-tag="越剧">越剧</span>
+                <span class="tag-btn" data-tag="京剧">京剧</span>
+                <span class="tag-btn" data-tag="戏曲">戏曲</span>
+                <span class="tag-btn" data-tag="摇滚">摇滚</span>
+                <span class="tag-btn" data-tag="爵士">爵士</span>
+                <span class="tag-btn" data-tag="军歌">军歌</span>
+            </div>
+            <div class="category-name">乐器</div>
+            <div class="tag-buttons" id="yueqi">
+                <span class="tag-btn" data-tag="钢琴">钢琴</span>
+                <span class="tag-btn" data-tag="长笛">长笛</span>
+                <span class="tag-btn" data-tag="二胡">二胡</span>
+                <span class="tag-btn" data-tag="唢呐">唢呐</span>
+                <span class="tag-btn" data-tag="古筝">古筝</span>
+                <span class="tag-btn" data-tag="琵琶">琵琶</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 爱好标签确认小弹窗 -->
+    <div id="tagConfirmModal" class="modal modal--top">
+        <div class="modal-box modal-box--sm modal-box--confirm">
+            <h3>确认更改</h3>
+            <p class="modal-tip-text">是否确认更改个人爱好标签？<br>确认后将更新您的课程推荐。</p>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="tagConfirmCancel">取消</button>
+                <button class="btn-confirm" id="tagConfirmOk">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 爱好标签保存成功小弹窗 -->
+    <div id="tagSuccessModal" class="modal modal--top">
+        <div class="modal-box modal-box--sm">
+            <div class="modal-success-icon">✅</div>
+            <h3>保存成功</h3>
+            <p class="modal-tip-text">个人爱好标签已更新，<br>将为您推荐更合适的课程。</p>
+            <div class="modal-actions modal-actions--single">
+                <button class="btn-confirm" id="tagSuccessOk">知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 延后开课模态框 -->
+    <div id="delayModal" class="modal">
+        <div class="modal-box">
+            <h3>📅 选择延后开课日期</h3>
+            <input type="date" id="delayDatePicker" style="width:100%;padding:12px 14px;border:1px solid #ccc;border-radius:12px;font-size:16px;margin-bottom:20px;outline:none;background:#f9f9f9;">
+            <div class="modal-actions">
+                <button class="btn-cancel" id="delayCancel">取消</button>
+                <button class="btn-confirm" id="delayConfirm">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 延后成功小弹窗 -->
+    <div id="delaySuccessModal" class="modal">
+        <div class="modal-box modal-box--sm">
+            <div class="modal-success-icon">✅</div>
+            <h3>延后成功</h3>
+            <div class="modal-info modal-info--compact">
+                <div class="modal-info-item">
+                    <span class="modal-info-label">课程名称：</span>
+                    <span class="modal-info-value" id="delaySuccessCourseName"></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">确认延迟时间：</span>
+                    <span class="modal-info-value highlight" id="delaySuccessConfirmDate"></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">现开课时间：</span>
+                    <span class="modal-info-value highlight" id="delaySuccessStartDate"></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">课程节数：</span>
+                    <span class="modal-info-value" id="delaySuccessLessonCount"></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">主教老师：</span>
+                    <span class="modal-info-value" id="delaySuccessTeacher"></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">助教老师：</span>
+                    <span class="modal-info-value" id="delaySuccessAssistant"></span>
+                </div>
+            </div>
+            <div class="modal-actions modal-actions--single">
+                <button class="btn-confirm" id="delaySuccessOk">知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ 新增：课程确认弹窗 -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-box">
+            <h3>📚 课程信息确认</h3>
+            <div class="modal-info">
+                <div class="modal-info-item">
+                    <span class="modal-info-label">课程名称：</span>
+                    <span class="modal-info-value" id="confirmCourseName"></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">开课时间：</span>
+                    <span class="modal-info-value" id="confirmStartDate"></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">主教老师：</span>
+                    <span class="modal-info-value" id="confirmTeacher"></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">助教老师：</span>
+                    <span class="modal-info-value" id="confirmAssistant"></span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">上课地点：</span>
+                    <span class="modal-info-value">线上直播+录播回放</span>
+                </div>
+                <div class="modal-info-item" style="margin-top:12px;">
+                    <span class="modal-info-label" style="width:100%;color:#4CAF50;">📌 温馨提示：</span>
+                </div>
+                <div style="font-size:13px;color:#666;line-height:1.6;">
+                    1. 开课当天会有短信提醒，请保持手机畅通<br>
+                    2. 课程视频支持永久回放，随时可以观看<br>
+                    3. 有任何问题可以随时联系助教老师
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="confirmCancel">取消</button>
+                <button class="btn-confirm" id="confirmConfirm">确认课程</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/wht-storage.js"></script>
+    <script>
+        // ✅ 完整课程数据（新增老师信息）
+        const courses = [
+            { 
+                id: 1, 
+                name: '水彩画入门课10节', 
+                price: 199, 
+                desc: '中老年零基础水彩入门课程',
+                img: 'wwanhuatong/shuifen.jpg',
+                defaultStartDate: '2026-06-20',
+                lessonCount: 10,
+                teacher: '李美玲',
+                assistant: '王小雅'
+            },
+            { 
+                id: 2, 
+                name: '书法基础', 
+                price: 299, 
+                desc: '修身养性，硬笔毛笔同步学习',
+                img: 'wwanhuatong/shufa.jpg',
+                defaultStartDate: '2026-06-25',
+                lessonCount: 12,
+                teacher: '张建国',
+                assistant: '刘小明'
+            },
+            { 
+                id: 3, 
+                name: '手机摄影', 
+                price: 159, 
+                desc: '日常拍照修图实用教程',
+                img: 'wwanhuatong/sheying.jpg',
+                defaultStartDate: '2026-07-01',
+                lessonCount: 8,
+                teacher: '陈雨晴',
+                assistant: '赵小天'
+            },
+            { 
+                id: 4, 
+                name: '国画进阶', 
+                price: 299, 
+                desc: '国画进阶课程',
+                img: 'wwanhuatong/shuifen.jpg',
+                defaultStartDate: '2026-07-05',
+                lessonCount: 10,
+                teacher: '王丹青',
+                assistant: '孙小美'
+            },
+            { 
+                id: 5, 
+                name: '书法入门', 
+                price: 199, 
+                desc: '书法入门课程',
+                img: 'wwanhuatong/shufa.jpg',
+                defaultStartDate: '2026-07-10',
+                lessonCount: 10,
+                teacher: '张建国',
+                assistant: '刘小明'
+            }
+        ];
+
+        // 全局数据（游客不继承登录用户的订单）
+        let orders = window.XueWuyaWhtStorage ? XueWuyaWhtStorage.getOrders() : [];
+        function persistOrders() {
+            if (window.XueWuyaWhtStorage) XueWuyaWhtStorage.saveOrders(orders);
+        }
+        const userSelectTags = JSON.parse(localStorage.getItem('userHobbyTags') || '["水墨","工笔画","戏曲"]');
+
+        // 推荐课程（现在带图片）
+        const recommendCourses = [
+            { id: 4, name: '国画进阶', price: 299, desc: '国画进阶课程', img: 'wwanhuatong/shuifen.jpg' },
+            { id: 5, name: '书法入门', price: 199, desc: '书法入门课程', img: 'wwanhuatong/shufa.jpg' }
+        ];
+
+        let delayOrderIndex = null;
+        let confirmOrderIndex = null; // 当前确认的订单索引
+
+        // 跳转到个人作品墙
+        function goToUserWall() {
+            localStorage.setItem('gotoStudyPage', 'pageUserWall');
+            window.location.href = 'study.html';
+        }
+
+        // 根据课程名称获取课程信息
+        function getCourseByName(name) {
+            return courses.find(c => c.name === name) || { 
+                img: '', 
+                defaultStartDate: '待定',
+                lessonCount: 0,
+                teacher: '待定',
+                assistant: '待定'
+            };
+        }
+
+        function formatDisplayDate(dateStr) {
+            if (!dateStr) return '待定';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return parts[0] + '年' + parseInt(parts[1], 10) + '月' + parseInt(parts[2], 10) + '日';
+            }
+            return dateStr;
+        }
+
+        function getLessonCountText(course) {
+            if (course.lessonCount) return course.lessonCount + '节';
+            const match = (course.name || '').match(/(\d+)节/);
+            return match ? match[1] + '节' : '待定';
+        }
+
+        function showDelaySuccessModal(orderIndex, newDate) {
+            const order = orders[orderIndex];
+            const course = getCourseByName(order.courseName);
+            const displayDate = formatDisplayDate(newDate);
+
+            document.getElementById('delaySuccessCourseName').innerText = order.courseName;
+            document.getElementById('delaySuccessConfirmDate').innerText = displayDate;
+            document.getElementById('delaySuccessStartDate').innerText = displayDate;
+            document.getElementById('delaySuccessLessonCount').innerText = getLessonCountText(course);
+            document.getElementById('delaySuccessTeacher').innerText = course.teacher || '待定';
+            document.getElementById('delaySuccessAssistant').innerText = course.assistant || '待定';
+            document.getElementById('delaySuccessModal').classList.add('active');
+        }
+
+        // ---------- 渲染订单（现在带图片和开课时间） ----------
+        function renderOrders() {
+            const box = document.getElementById('orderList');
+            
+            if (orders.length === 0) {
+                box.innerHTML = '<div class="empty-state">暂无订单</div>';
+                return;
+            }
+            
+            box.innerHTML = orders.map((o, idx) => {
+                const course = getCourseByName(o.courseName);
+                // 显示开课时间：优先显示用户延后的时间，否则显示默认时间
+                const showDate = o.delayDay || course.defaultStartDate;
+                
+                return `
+                <div class="order-card-item">
+                    <div style="display:flex;gap:12px;">
+                        <div class="order-course-img">
+                            <img src="${course.img}" alt="${o.courseName}" onerror="this.style.display='none'">
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:500;">${o.courseName}</div>
+                            <div style="color:#999;font-size:12px;">七天无理由退费</div>
+                            <div style="font-size:12px;color:#666;margin-top:4px;">开课时间：${showDate}</div>
+                            ${o.delayDay ? `<div class="delay-date-text">✅ 已成功延后</div>` : ''}
+                        </div>
+                        <div style="color:#4CAF50;font-weight:bold;">¥${o.price}</div>
+                    </div>
+                    <div class="order-actions">
+                        <button class="action-btn gray" onclick="openDelayModal(${idx})">延后开课</button>
+                        <button class="action-btn gray" onclick="goStudy('${o.courseName}')">查看进度</button>
+                        <button class="action-btn green" onclick="openConfirmModal(${idx})">确认课程</button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        // ---------- 渲染推荐课程（现在带图片） ----------
+        function renderRecommend() {
+            const grid = document.getElementById('recommendGrid');
+            grid.innerHTML = recommendCourses.map(c => `
+                <div class="recommend-card" onclick="goRecommend(${c.id})">
+                    <div class="recommend-img">
+                        <img src="${c.img}" alt="${c.name}" onerror="this.style.display='none'">
+                    </div>
+                    <div class="recommend-info">
+                        <div>${c.name}</div>
+                        <div style="color:#4CAF50;margin-top:4px;">¥${c.price}</div>
+                        <div style="font-size:12px;color:#999;">${Math.floor(Math.random()*200)+100}人喜欢</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ---------- 延后开课 ----------
+        function openDelayModal(orderIndex) {
+            delayOrderIndex = orderIndex;
+            const picker = document.getElementById('delayDatePicker');
+            picker.value = orders[orderIndex].delayDay || '';
+            document.getElementById('delayModal').classList.add('active');
+        }
+
+        document.getElementById('delayCancel').onclick = function() {
+            document.getElementById('delayModal').classList.remove('active');
+            delayOrderIndex = null;
+        };
+
+        document.getElementById('delayConfirm').onclick = function() {
+            if (delayOrderIndex === null) return;
+            
+            const picker = document.getElementById('delayDatePicker');
+            const val = picker.value;
+            
+            if (!val) {
+                alert('请选择日期');
+                return;
+            }
+            
+            orders[delayOrderIndex].delayDay = val;
+            persistOrders();
+            const savedIndex = delayOrderIndex;
+            renderOrders();
+            document.getElementById('delayModal').classList.remove('active');
+            delayOrderIndex = null;
+            showDelaySuccessModal(savedIndex, val);
+        };
+
+        document.getElementById('delaySuccessOk').onclick = function() {
+            document.getElementById('delaySuccessModal').classList.remove('active');
+        };
+
+        // ---------- ✅ 新增：课程确认弹窗 ----------
+        function openConfirmModal(orderIndex) {
+            confirmOrderIndex = orderIndex;
+            const order = orders[orderIndex];
+            const course = getCourseByName(order.courseName);
+            const showDate = order.delayDay || course.defaultStartDate;
+            
+            // 填充弹窗信息
+            document.getElementById('confirmCourseName').innerText = order.courseName;
+            document.getElementById('confirmStartDate').innerText = showDate;
+            document.getElementById('confirmTeacher').innerText = course.teacher;
+            document.getElementById('confirmAssistant').innerText = course.assistant;
+            
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        document.getElementById('confirmCancel').onclick = function() {
+            document.getElementById('confirmModal').classList.remove('active');
+            confirmOrderIndex = null;
+        };
+
+        document.getElementById('confirmConfirm').onclick = function() {
+            if (confirmOrderIndex === null) return;
+            
+            const order = orders[confirmOrderIndex];
+            // 标记订单为已确认（可选）
+            orders[confirmOrderIndex].isConfirmed = true;
+            persistOrders();
+            
+            document.getElementById('confirmModal').classList.remove('active');
+            confirmOrderIndex = null;
+            
+            // 自动跳转到学习中心
+            goStudy(order.courseName);
+        };
+
+        // 点击模态框背景关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    delayOrderIndex = null;
+                    confirmOrderIndex = null;
+                }
+            });
+        });
+
+        document.getElementById('delaySuccessModal').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+
+        // ---------- 推荐跳转 ----------
+        function goRecommend(id) {
+            const c = courses.find(item => item.id === id);
+            if (c) {
+                localStorage.setItem('currentCourse', JSON.stringify(c));
+                window.location.href = 'detail.html';
+            }
+        }
+
+        // ---------- 学习跳转 ----------
+        function goStudy(name) {
+            localStorage.setItem('currentStudyCourse', name);
+            window.location.href = 'study.html';
+        }
+
+        // ---------- 兴趣标签 ----------
+        const allTagDom = document.querySelectorAll('.tag-btn');
+        allTagDom.forEach(btn => {
+            const tagVal = btn.getAttribute('data-tag');
+            if (userSelectTags.includes(tagVal)) btn.classList.add('active');
+            
+            btn.onclick = function() {
+                const tag = this.getAttribute('data-tag');
+                if (userSelectTags.includes(tag)) {
+                    userSelectTags.splice(userSelectTags.indexOf(tag), 1);
+                    this.classList.remove('active');
+                } else {
+                    userSelectTags.push(tag);
+                    this.classList.add('active');
+                }
+            };
+        });
+
+        document.getElementById('openTag').onclick = function() {
+            document.getElementById('tagModal').classList.add('active');
+        };
+
+        function restoreOriginalTags() {
+            const originalTags = JSON.parse(localStorage.getItem('userHobbyTags') || '["水墨","工笔画","戏曲"]');
+            userSelectTags.splice(0, userSelectTags.length);
+            originalTags.forEach(function(tag) {
+                userSelectTags.push(tag);
+            });
+            allTagDom.forEach(function(b) {
+                const t = b.getAttribute('data-tag');
+                b.classList.toggle('active', originalTags.includes(t));
+            });
+        }
+
+        function closeTagModal() {
+            document.getElementById('tagModal').classList.remove('active');
+        }
+
+        document.getElementById('closeModalBtn').onclick = function() {
+            document.getElementById('tagConfirmModal').classList.add('active');
+        };
+
+        document.getElementById('tagConfirmCancel').onclick = function() {
+            document.getElementById('tagConfirmModal').classList.remove('active');
+            restoreOriginalTags();
+            closeTagModal();
+        };
+
+        document.getElementById('tagConfirmOk').onclick = function() {
+            localStorage.setItem('userHobbyTags', JSON.stringify(userSelectTags));
+            document.getElementById('tagConfirmModal').classList.remove('active');
+            closeTagModal();
+            document.getElementById('tagSuccessModal').classList.add('active');
+        };
+
+        document.getElementById('tagSuccessOk').onclick = function() {
+            document.getElementById('tagSuccessModal').classList.remove('active');
+        };
+
+        document.getElementById('tagConfirmModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+                restoreOriginalTags();
+                closeTagModal();
+            }
+        });
+
+        document.getElementById('tagSuccessModal').addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+
+        // ---------- 初始化 ----------
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.XueWuyaAuth && XueWuyaAuth.blockGuestPage('index.html')) return;
+            renderOrders();
+            renderRecommend();
+        });
+    </script>
+    <script src="../js/voice-mode.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/nav.js"></script>
+</body>
+</html>

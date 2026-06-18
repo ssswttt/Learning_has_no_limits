@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>传家录 - 留言列表</title>
+  <link rel="stylesheet" href="../../css/main.css">
+  <script>window.PAGE_CONFIG = { activeTab: "msg" };</script>
+</head>
+<body data-active-module="chuanjia">
+  <div class="phone page--msg-list">
+    <div data-include="page-header"></div>
+
+    <div class="phone__scroll">
+      <div class="msg-toolbar" style="padding-top:12px;">
+        <div class="msg-toolbar__row msg-toolbar__row--actions">
+          <a class="btn-primary msg-toolbar__btn" href="home.html">返回</a>
+          <a class="btn-primary msg-toolbar__btn" href="publish.html">添加留言</a>
+        </div>
+        <div class="msg-toolbar__row msg-toolbar__row--search">
+          <div class="msg-search-wrap">
+            <input class="msg-search" id="msgSearchInput" type="text" placeholder="🔍 搜索留言">
+            <button type="button" class="msg-search-btn" id="btnSearchMsg">搜索</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="msg-list" id="msgListRoot"></div>
+    </div>
+
+    <div data-include="bottom-nav"></div>
+  </div>
+  <script src="../../../js/voice-mode.js"></script>
+    <script src="../../../js/auth.js"></script>
+  <script src="../../../js/nav.js"></script>
+    <script src="../../../js/family-avatars.js"></script>
+  <script src="../../js/app.js"></script>
+  <script src="../../js/interactions.js"></script>
+</body>
+</html>

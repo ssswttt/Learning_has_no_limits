@@ -1,0 +1,57 @@
+/**
+ * 长辈模式字体放大（与自留地 home.html 逻辑一致）
+ * 开启方式：localStorage elderMode === 'true' 时 body 添加 .elder
+ */
+body.elder {
+  font-size: 18px !important;
+}
+
+body.elder .page-title {
+  font-size: 20px;
+  height: 60px;
+}
+
+body.elder .home-header .name {
+  font-size: 22px;
+}
+
+body.elder .menu-item .text {
+  font-size: 17px;
+}
+
+body.elder .family-title {
+  font-size: 17px;
+}
+
+body.elder .nav-item,
+body.elder .nav-text {
+  font-size: 13px;
+}
+
+/* 全站同类元素沿用相同字号规则 */
+body.elder .header-title,
+body.elder .header .page-title,
+body.elder .nav-bar .title {
+  font-size: 20px;
+}
+
+body.elder .top-nav-item,
+body.elder .top-tabs__tab,
+body.elder .tab,
+body.elder .tab-item,
+body.elder .tab-btn,
+body.elder .section-head,
+body.elder .section-title,
+body.elder .filter-label,
+body.elder .filter-select,
+body.elder .group-name,
+body.elder .course-name,
+body.elder .course-desc,
+body.elder .feature-card .label,
+body.elder .feature-card .desc,
+body.elder .memoir-list-card__title,
+body.elder .message-list-card__title,
+body.elder .masonry-card__title,
+body.elder .section-head__title {
+  font-size: 17px;
+}
