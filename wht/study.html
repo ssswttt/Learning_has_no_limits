@@ -499,7 +499,6 @@
 
         /* ✅ 小红书风格作品详情页 */
         .detail-header {
-            /* 顶部导航常驻，详情标题下移避开top-nav */
             position: fixed;
             top: 44px;
             left: 50%;
@@ -516,7 +515,7 @@
 
         .detail-content {
             padding-top: 50px;
-            padding-bottom: 75px;
+            padding-bottom: 60px;
         }
 
         .detail-img {
@@ -659,6 +658,7 @@
         /* 底部评论输入框 */
         .comment-input-bar {
             position: fixed;
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
             width: 100%; max-width: var(--app-max-width, 430px);
@@ -668,12 +668,6 @@
             display: flex;
             gap: 12px;
             align-items: center;
-            /* 作品墙页面：上移5px，紧贴底部导航上方 */
-            bottom: 65px;
-        }
-        /* 详情页激活，底部导航隐藏，输入框贴屏幕最底部 */
-        #pageWorkDetail.active .comment-input-bar {
-            bottom: 0;
         }
 
         .comment-input {
@@ -693,11 +687,6 @@
             border-radius: 20px;
             font-size: 14px;
             cursor: pointer;
-        }
-
-        /* 关键：详情页只隐藏底部导航，顶部导航保留 */
-        body:has(#pageWorkDetail.active) .global-bottom-nav {
-            display: none !important;
         }
     </style>
 </head>
@@ -1113,7 +1102,6 @@
             }
         }
 
-        // ========== 关注功能（本地存储持久化）==========
         function getFollowedUsers() {
             return JSON.parse(localStorage.getItem('whtFollowedUsers') || '[]');
         }
@@ -1126,7 +1114,6 @@
             return getFollowedUsers().includes(author);
         }
 
-        // 切换关注/取消关注
         function toggleFollowAuthor(author) {
             const list = getFollowedUsers();
             const idx = list.indexOf(author);
@@ -1141,11 +1128,9 @@
             updateFollowState(author);
         }
 
-        // 更新关注按钮文字+样式
         function updateFollowState(author) {
             const btn = document.getElementById('detailFollowBtn');
             if (!btn) return;
-            // 自己不能关注自己，隐藏按钮
             if (author === user) {
                 btn.style.display = 'none';
                 return;
@@ -1424,7 +1409,7 @@
         // ✅ 修复版：点赞/取消点赞（使用原始索引）
         function toggleLike(originalIndex) {
             const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
-            const work = hwList[originalIndex];
+            const work = hwList[originalIndex]; // ✅ 现在用原始索引取作品，绝对不会错
             
             if (typeof work.likeCount === 'undefined') work.likeCount = 0;
             if (typeof work.isLiked === 'undefined') work.isLiked = false;
@@ -1443,21 +1428,6 @@
             // 如果正在查看详情页，也更新详情页的点赞状态
             if (currentWorkOriginalIndex === originalIndex) {
                 updateDetailLikeState(work);
-            }
-        }
-
-        // 更新详情页点赞状态
-        function updateDetailLikeState(work) {
-            const likeBtn = document.getElementById('detailLikeBtn');
-            const likeCount = document.getElementById('detailLikeCount');
-            
-            likeCount.innerText = work.likeCount || 0;
-            if (work.isLiked) {
-                likeBtn.classList.add('liked');
-                likeBtn.querySelector('.icon').innerText = '❤️';
-            } else {
-                likeBtn.classList.remove('liked');
-                likeBtn.querySelector('.icon').innerText = '🤍';
             }
         }
 
@@ -1481,6 +1451,21 @@
             renderCommentList(work.comments);
 
             show('pageWorkDetail');
+        }
+
+        // 更新详情页点赞状态
+        function updateDetailLikeState(work) {
+            const likeBtn = document.getElementById('detailLikeBtn');
+            const likeCount = document.getElementById('detailLikeCount');
+            
+            likeCount.innerText = work.likeCount || 0;
+            if (work.isLiked) {
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('.icon').innerText = '❤️';
+            } else {
+                likeBtn.classList.remove('liked');
+                likeBtn.querySelector('.icon').innerText = '🤍';
+            }
         }
 
         // 渲染评论列表
@@ -1523,7 +1508,7 @@
             
             if (!work.comments) work.comments = [];
             
-            // 添加新评论（最新的在最上面）
+            // 添加新评论
             work.comments.unshift({
                 user: user,
                 content: content,
@@ -1540,7 +1525,7 @@
             showWhtToast('评论发布成功');
         }
 
-        // 作业图片上传（单张限制）
+        // 作业图片上传（UI 参考传家录回忆录篇章）
         const MAX_HW_PHOTOS = 1;
 
         function renderHwPhotos() {
@@ -1548,16 +1533,14 @@
             const addBtn = document.getElementById('upImg');
             if (!row || !addBtn) return;
 
-            // 清空现有预览
-            row.querySelectorAll('.media-preview').forEach(node => node.remove());
+            row.querySelectorAll('.media-preview').forEach(function(node) {
+                node.remove();
+            });
 
             if (currentImgBase64) {
                 const wrap = document.createElement('div');
                 wrap.className = 'media-preview';
-                wrap.innerHTML = `
-                    <img class="media-preview__img" src="${currentImgBase64}" alt="作业图片">
-                    <button type="button" class="media-preview__remove" aria-label="删除">×</button>
-                `;
+                wrap.innerHTML = '<img class="media-preview__img" src="' + currentImgBase64 + '" alt="作业图片"><button type="button" class="media-preview__remove" aria-label="删除">×</button>';
                 wrap.querySelector('.media-preview__remove').addEventListener('click', function() {
                     currentImgBase64 = '';
                     renderHwPhotos();
@@ -1566,14 +1549,12 @@
                 row.insertBefore(wrap, addBtn);
             }
 
-            // 达到上限时隐藏添加按钮
             addBtn.style.display = currentImgBase64 ? 'none' : '';
         }
 
-        // 处理文件选择
         document.getElementById('imgFile').onchange = function(e) {
             const file = e.target.files[0];
-            e.target.value = ''; // 清空以允许重复选择同一文件
+            e.target.value = '';
             if (!file) return;
 
             if (currentImgBase64) {
@@ -1600,9 +1581,9 @@
             
             const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
             hwList.unshift({
-                user: user,
-                course: course,
-                content: content,
+                user,
+                course,
+                content,
                 img: currentImgBase64,
                 time: new Date().toLocaleString(),
                 likeCount: 0,
@@ -1614,23 +1595,21 @@
             localStorage.setItem('hwList', JSON.stringify(hwList));
             showWhtToast('提交成功');
             
-            // 重置表单
             currentImgBase64 = '';
             renderHwPhotos();
             document.getElementById('content').value = '';
             
-            // 跳转到我的作业列表
             renderMyHw();
             show('pageMyHwList');
         };
 
-        // ========== 全局事件绑定 ==========
+        // 事件绑定
         document.getElementById('goHw').onclick = () => show('pageHomework');
         document.getElementById('goSubmit').onclick = () => show('pageSubmit');
         document.getElementById('goCourseWall').onclick = () => show('pageCourseWall');
         document.getElementById('upImg').onclick = () => document.getElementById('imgFile').click();
         
-        // 详情页功能按钮
+        // 详情页点赞按钮
         document.getElementById('detailLikeBtn').onclick = function() {
             if (currentWorkOriginalIndex !== -1) {
                 toggleLike(currentWorkOriginalIndex);
@@ -1641,31 +1620,23 @@
             if (currentWorkOriginalIndex === -1) return;
             const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
             const work = hwList[currentWorkOriginalIndex];
-            if (work && work.user !== user) {
-                toggleFollowAuthor(work.user);
-            }
+            if (work && work.user !== user) toggleFollowAuthor(work.user);
         };
 
         document.getElementById('detailCollectBtn').onclick = function() {
-            if (currentWorkOriginalIndex !== -1) {
-                toggleCollect(currentWorkOriginalIndex);
-            }
+            if (currentWorkOriginalIndex !== -1) toggleCollect(currentWorkOriginalIndex);
         };
 
         document.getElementById('detailShareBtn').onclick = function() {
             if (currentWorkOriginalIndex === -1) return;
             const hwList = JSON.parse(localStorage.getItem('hwList') || '[]');
             const work = hwList[currentWorkOriginalIndex];
-            if (work) {
-                shareWork(work);
-            }
+            if (work) shareWork(work);
         };
 
         document.getElementById('detailCommentBtn').onclick = function() {
             const list = document.getElementById('commentList');
-            if (list) {
-                list.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            if (list) list.scrollIntoView({ behavior: 'smooth', block: 'start' });
             document.getElementById('commentInput').focus();
         };
         
@@ -1679,19 +1650,12 @@
             }
         });
 
-        // ========== 页面初始化 ==========
+        // 初始化
         document.addEventListener('DOMContentLoaded', function() {
-            // 游客拦截（如果有认证系统）
             if (window.XueWuyaAuth && XueWuyaAuth.blockGuestPage('index.html')) return;
-            
-            // 初始化数据
             initDefaultWorks();
             migrateAllOldData();
-            
-            // 设置页面标题
             document.getElementById('courseTitle').innerText = course;
-            
-            // 渲染所有初始内容
             renderChapterList();
             renderMyHw();
             updateExcellentEntry();

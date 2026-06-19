@@ -19,27 +19,25 @@
             <div class="filter-bar">
                 <div class="filter-item">
                     <span class="filter-label">兴趣标签</span>
-                    <select class="filter-select" id="tag-filter">
-                        <option value="all">全部</option>
-                        <option value="摄影">摄影</option>
-                        <option value="书法">书法</option>
-                        <option value="茶艺">茶艺</option>
-                        <option value="绘画">绘画</option>
+                    <select class="filter-select">
+                        <option>摄影</option>
+                        <option>书法</option>
+                        <option>茶艺</option>
+                        <option>绘画</option>
                     </select>
                 </div>
                 <div class="filter-item">
                     <span class="filter-label">所在地区</span>
-                    <select class="filter-select" id="location-filter">
-                        <option value="all">全部</option>
-                        <option value="北京市">北京市</option>
-                        <option value="上海市">上海市</option>
-                        <option value="广州市">广州市</option>
+                    <select class="filter-select">
+                        <option>北京市</option>
+                        <option>上海市</option>
+                        <option>广州市</option>
                     </select>
                 </div>
             </div>
 
             <div class="groups-list">
-                <div class="group-card" data-tag="摄影" data-location="北京市">
+                <div class="group-card">
                     <div class="group-header">
                         <div class="group-icon-wrap">
                             <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=camera%20icon%20on%20grass%20landscape&image_size=square" alt="摄影" class="group-icon">
@@ -64,7 +62,7 @@
                     <button class="join-btn disabled">申请候补</button>
                 </div>
 
-                <div class="group-card" data-tag="书法" data-location="北京市">
+                <div class="group-card">
                     <div class="group-header">
                         <div class="group-icon-wrap">
                             <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese%20calligraphy%20brush%20elegant&image_size=square" alt="书法" class="group-icon">
@@ -88,7 +86,7 @@
                     <button class="join-btn" onclick="navigateToChat('海淀社区书法研习社')">一键加入</button>
                 </div>
 
-                <div class="group-card" data-tag="茶艺" data-location="北京市">
+                <div class="group-card">
                     <div class="group-header">
                         <div class="group-icon-wrap">
                             <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=chinese%20tea%20ceremony%20set%20elegant&image_size=square" alt="茶艺" class="group-icon">
@@ -477,17 +475,39 @@
             <div class="publish-content">
                 <textarea class="publish-textarea" placeholder="随手说出你此刻的感想……"></textarea>
                 
-                <div class="upload-images" id="upload-images">
-                    <div class="upload-box" onclick="triggerFileInput()">
+                <div class="upload-images">
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
+                        <span class="upload-plus">+</span>
+                    </div>
+                    <div class="upload-box">
                         <span class="upload-plus">+</span>
                     </div>
                 </div>
                 <p class="upload-hint">（最多添加9张图片，长按可删除）</p>
 
-                <button class="submit-btn" onclick="publishWork()">发布</button>
+                <button class="submit-btn">发布</button>
             </div>
-
-            <input type="file" id="image-input" accept="image/*" multiple style="display: none;" onchange="handleImageSelect(event)">
         </div>
 
         <div id="group-settings" class="page">
@@ -504,56 +524,56 @@
                         <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20happy&image_size=square" alt="王阿姨">
-                        <span>王阿姨</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20happy&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20man%20portrait%20kind&image_size=square" alt="张叔叔">
-                        <span>张叔叔</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20kind&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20gentle&image_size=square" alt="刘阿姨">
-                        <span>刘阿姨</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20gentle&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20man%20portrait%20warm&image_size=square" alt="赵叔叔">
-                        <span>赵叔叔</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20warm&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20friendly&image_size=square" alt="孙阿姨">
-                        <span>孙阿姨</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=elderly%20woman%20portrait%20friendly&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=abstract%20colorful%20art&image_size=square" alt="周叔叔">
-                        <span>周叔叔</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=abstract%20colorful%20art&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=landscape%20mountain%20scenery&image_size=square" alt="吴阿姨">
-                        <span>吴阿姨</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=landscape%20mountain%20scenery&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=blue%20ocean%20waves&image_size=square" alt="郑叔叔">
-                        <span>郑叔叔</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=blue%20ocean%20waves&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=night%20sky%20stars&image_size=square" alt="黄阿姨">
-                        <span>黄阿姨</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=night%20sky%20stars&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=forest%20trees%20nature&image_size=square" alt="钱叔叔">
-                        <span>钱叔叔</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=forest%20trees%20nature&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                     <div class="member-item">
-                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=city%20night%20lights&image_size=square" alt="冯阿姨">
-                        <span>冯阿姨</span>
+                        <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=city%20night%20lights&image_size=square" alt="李阿姨">
+                        <span>李阿姨</span>
                     </div>
                 </div>
                 <button class="more-members">更多群成员 ▼</button>
 
                 <div class="settings-list">
-                    <div class="settings-item" onclick="editGroupInfo('group-name')">
+                    <div class="settings-item">
                         <span class="settings-label">群聊名称</span>
-                        <span class="settings-value" id="group-name-value">晨练摄影队</span>
+                        <span class="settings-value">晨练摄影队</span>
                         <span class="settings-arrow">›</span>
                     </div>
                     <div class="settings-item">
@@ -561,36 +581,35 @@
                         <span class="settings-qrcode">📱</span>
                         <span class="settings-arrow">›</span>
                     </div>
-                    <div class="settings-item" onclick="editGroupInfo('group-notice')">
+                    <div class="settings-item">
                         <span class="settings-label">群聊公告</span>
-                        <span class="settings-value" id="group-notice-value">欢迎加入共学堂交流群！</span>
+                        <span class="settings-value">欢迎加入共学堂交流群！</span>
                         <span class="settings-arrow">›</span>
                     </div>
-                    <div class="settings-item" onclick="editGroupInfo('group-note')">
+                    <div class="settings-item">
                         <span class="settings-label">备注</span>
-                        <span class="settings-value" id="group-note-value"></span>
                         <span class="settings-arrow">›</span>
                     </div>
-                    <div class="settings-item" onclick="editGroupInfo('group-nickname')">
+                    <div class="settings-item">
                         <span class="settings-label">我在群里的昵称</span>
-                        <span class="settings-value" id="group-nickname-value">张阿姨</span>
+                        <span class="settings-value">张阿姨</span>
                         <span class="settings-arrow">›</span>
                     </div>
                     <div class="settings-item">
                         <span class="settings-label">查找聊天记录</span>
                         <span class="settings-arrow">›</span>
                     </div>
-                    <div class="settings-item toggle" onclick="toggleSwitch(this)">
+                    <div class="settings-item toggle">
                         <span class="settings-label">消息免打扰</span>
                         <div class="toggle-switch off"></div>
                     </div>
-                    <div class="settings-item toggle" onclick="toggleSwitch(this)">
+                    <div class="settings-item toggle">
                         <span class="settings-label">置顶聊天</span>
                         <div class="toggle-switch on"></div>
                     </div>
                 </div>
 
-                <button class="exit-btn" onclick="exitGroup()">退出群聊</button>
+                <button class="exit-btn">退出群聊</button>
             </div>
         </div>
 
