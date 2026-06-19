@@ -144,6 +144,7 @@
 
         /* ✅ 小红书风格作品详情页（和学习中心完全一致） */
         .detail-header {
+            /* 顶部导航保留，所以详情标题往下偏移匹配top-nav高度 */
             position: fixed;
             top: 44px;
             left: 50%;
@@ -160,7 +161,7 @@
 
         .detail-content {
             padding-top: 50px;
-            padding-bottom: 60px;
+            padding-bottom: 75px; /* 底部多预留一点，避免内容被输入框遮挡 */
         }
 
         .detail-img {
@@ -303,7 +304,6 @@
         /* 底部评论输入框 */
         .comment-input-bar {
             position: fixed;
-            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
             width: 100%; max-width: var(--app-max-width, 430px);
@@ -313,6 +313,12 @@
             display: flex;
             gap: 12px;
             align-items: center;
+            /* 主页：往上移动5px，原来70 → 65，紧贴导航栏上方 */
+            bottom: 65px;
+        }
+        /* 详情页激活时输入框贴最底部 */
+        #pageWorkDetail.active .comment-input-bar {
+            bottom: 0;
         }
 
         .comment-input {
@@ -333,10 +339,15 @@
             font-size: 14px;
             cursor: pointer;
         }
+
+        /* ========== 关键修改：只隐藏底部导航，顶部top-nav保留 ========== */
+        body:has(#pageWorkDetail.active) .global-bottom-nav {
+            display: none !important;
+        }
     </style>
 </head>
 <body data-active-module="wanhua">
-    <!-- 顶部导航 -->
+    <!-- 顶部导航（详情页保留显示） -->
     <div class="top-nav">
         <div class="top-nav-item" onclick="window.location.href='index.html'">课程总览</div>
         <div class="top-nav-item" onclick="window.location.href='study.html'">学习中心</div>
@@ -344,7 +355,7 @@
         <div class="top-nav-item" onclick="window.location.href='order.html'">我的订单</div>
     </div>
 
-    <!-- 底部导航栏 -->
+    <!-- 底部导航栏（详情页自动隐藏） -->
         <nav class="global-bottom-nav">
         <button type="button" class="nav-item" data-nav-module="baixiaotang"><span class="nav-icon">💡</span><span>百晓堂</span></button>
         <button type="button" class="nav-item active" data-nav-module="wanhua"><span class="nav-icon">📺</span><span>万花筒</span></button>
@@ -423,8 +434,7 @@
                     <span id="detailCollectText">收藏</span>
                 </div>
                 <div class="action-item" id="detailShareBtn">
-                    <span class="icon">↗️</span>
-                    <span>分享</span>
+                    <span class="icon">↗️</span><span>分享</span>
                 </div>
             </div>
             <div class="detail-desc" id="detailDesc"></div>
@@ -833,6 +843,5 @@
     </script>
     <script src="../js/voice-mode.js"></script>
     <script src="../js/auth.js"></script>
-    <script src="../js/nav.js"></script>
 </body>
 </html>
