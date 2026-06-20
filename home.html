@@ -33,6 +33,10 @@
             color: #333;
             cursor: pointer;
         }
+        .page-title-text {
+            position: relative;
+            z-index: 1;
+        }
         .page {
             display: none;
         }
@@ -575,7 +579,7 @@
             <div class="menu-item">
                 <div style="display:flex;align-items:center;">
                     <span class="icon">👵</span>
-                    <span class="text">长辈模式（全站字体放大）</span>
+                    <span class="text">长辈模式</span>
                 </div>
                 <div class="switch" id="switchElder"></div>
             </div>
@@ -583,7 +587,7 @@
             <div class="menu-item">
                 <div style="display:flex;align-items:center;">
                     <span class="icon">🔊</span>
-                    <span class="text">语音音量开关（全站切页自动朗读）</span>
+                    <span class="text">语音音量开关</span>
                 </div>
                 <div class="switch" id="switchVoice"></div>
             </div>
@@ -608,7 +612,7 @@
     <div class="page" id="settingPage">
         <div class="page-title">
             <span class="back-btn" onclick="switchPage('settingPage','home')">‹</span>
-            设置
+            <span class="page-title-text">设置</span>
         </div>
         <!-- 1.账号信息修改 -->
         <div class="setting-card">
@@ -657,7 +661,7 @@
     <div class="page study-page" id="study">
         <div class="page-title">
             <span class="back-btn" onclick="switchPage('study','home')">‹</span>
-            学习足迹与徽章证书
+            <span class="page-title-text">学习足迹与徽章证书</span>
         </div>
         <div class="study-header-bg">
             <div class="study-header-illustration">
@@ -805,7 +809,7 @@
     <div class="page collect-history-page" id="collect">
         <div class="page-title">
             <span class="back-btn" onclick="switchPage('collect','home')">‹</span>
-            收藏
+            <span class="page-title-text">收藏与历史浏览</span>
         </div>
         <div class="collect-tab-bar">
             <div class="collect-tab-btn active" onclick="switchCollectTab('collect')">收藏</div>
@@ -1055,19 +1059,21 @@
             //切换tab也重新朗读本页
             if (window.XueWuyaVoiceMode) XueWuyaVoiceMode.scheduleRead(200);
         }
+        //修复后的切换收藏tab函数，只修改标题文字，不覆盖整个page-title容器，返回按钮永久存在
         function switchCollectTab(tab) {
             const tabs = document.querySelectorAll('.collect-tab-btn');
             const contents = document.querySelectorAll('.collect-content');
+            const titleTextDom = document.querySelector('#collect .page-title-text');
             tabs.forEach(t => t.classList.remove('active'));
             contents.forEach(c => c.classList.remove('active'));
             if(tab === 'collect') {
                 tabs[0].classList.add('active');
                 document.getElementById('collect-tab').classList.add('active');
-                document.querySelector('#collect .page-title').innerText = '收藏';
+                titleTextDom.innerText = '收藏';
             } else {
                 tabs[1].classList.add('active');
                 document.getElementById('history-tab').classList.add('active');
-                document.querySelector('#collect .page-title').innerText = '历史浏览';
+                titleTextDom.innerText = '历史浏览';
             }
             renderZiliudiNewsLists();
             //切换收藏tab重新朗读

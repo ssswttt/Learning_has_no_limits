@@ -195,9 +195,9 @@
 <body>
     <div class="toast" id="toast"></div>
 
-    <!-- 1. 手机号验证码登录 -->
+    <!-- 1. 手机号/邮箱验证码登录 -->
     <div class="page active" id="login-sms">
-        <div class="page-title">手机号验证码登录</div>
+        <div class="page-title">验证码登录</div>
         <div class="form-card">
             <h2 class="welcome-title">欢迎回来</h2>
             <div class="input-group">
@@ -224,13 +224,13 @@
         </div>
     </div>
 
-    <!-- 2. 账号密码登录 -->
+    <!-- 2. 账号密码登录（支持手机号/邮箱） -->
     <div class="page" id="login-pwd">
         <div class="page-title">账号密码登录</div>
         <div class="form-card">
             <h2 class="welcome-title">欢迎回来</h2>
             <div class="input-group">
-                <input type="text" class="input-text" id="userid" placeholder="请输入用户id">
+                <input type="text" class="input-text" id="userid" placeholder="请输入手机号/邮箱">
             </div>
             <div class="input-group">
                 <input type="password" class="input-text" id="pwd" placeholder="请输入密码">
@@ -244,7 +244,7 @@
             <button class="submit-btn" onclick="loginByPwd()">开始使用</button>
             <button class="guest-btn" type="button" onclick="loginAsGuest()">游客登录</button>
             <div class="other-login">
-                <a onclick="switchPage('login-pwd','login-sms')">忘记密码</a>
+                <a onclick="switchPage('login-pwd','login-sms')">验证码登录</a>
             </div>
             <div class="register-tip">
                 还没有账号？<a onclick="switchPage('login-pwd','register')">前往注册</a>
@@ -252,7 +252,7 @@
         </div>
     </div>
 
-    <!-- 3. 用户注册 -->
+    <!-- 3. 用户注册（手机号+邮箱双存储） -->
     <div class="page" id="register">
         <div class="page-title">用户注册</div>
         <div class="form-card">
@@ -262,7 +262,7 @@
                 <input type="text" class="input-text" id="reg_phone" placeholder="请输入手机号">
             </div>
             <div class="input-group">
-                <input type="text" class="input-text" placeholder="请输入邮箱">
+                <input type="text" class="input-text" id="reg_email" placeholder="请输入邮箱">
             </div>
             <div class="input-group">
                 <input type="password" class="input-text" id="reg_pwd1" placeholder="请输入密码">
@@ -289,15 +289,21 @@
 
     <script>
         const correctCode = '123456';
-        const defaultUserId = '123456';
-        const defaultPwd = '123456';
+        // 预设默认账号配置
+        const DEFAULT_PHONE = '12345678901';
+        const DEFAULT_EMAIL = '123456@163.com';
+        const DEFAULT_PWD = '666666';
+
         let countdown = 0;
         let timer = null;
 
+        // ==================== 本地存储工具函数 ====================
+        // 获取已注册手机号列表
         function getRegisteredPhones() {
             const phones = localStorage.getItem('registeredPhones');
             return phones ? JSON.parse(phones) : [];
         }
+        // 保存手机号
         function saveRegisteredPhone(phone) {
             const phones = getRegisteredPhones();
             if (!phones.includes(phone)) {
@@ -305,6 +311,31 @@
                 localStorage.setItem('registeredPhones', JSON.stringify(phones));
             }
         }
+
+        // 获取账号密码映射 {账号:密码}
+        function getAccountMap() {
+            const map = localStorage.getItem('userAccountMap');
+            return map ? JSON.parse(map) : {};
+        }
+        // 保存账号（手机号/邮箱）和对应密码
+        function saveAccount(account, pwd) {
+            const map = getAccountMap();
+            map[account] = pwd;
+            localStorage.setItem('userAccountMap', JSON.stringify(map));
+        }
+
+        // 初始化默认账号（页面加载自动执行）
+        function initDefaultAccount() {
+            const map = getAccountMap();
+            // 不存在预设手机号/邮箱时自动写入
+            if (!map.hasOwnProperty(DEFAULT_PHONE)) {
+                saveRegisteredPhone(DEFAULT_PHONE);
+                saveAccount(DEFAULT_PHONE, DEFAULT_PWD);
+                saveAccount(DEFAULT_EMAIL, DEFAULT_PWD);
+            }
+        }
+
+        // ==================== 页面切换 & 提示 ====================
         function switchPage(from, to) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(to).classList.add('active');
@@ -323,7 +354,11 @@
             const btn2 = document.getElementById('regSendBtn');
             if(btn1) { btn1.innerText='发送验证码'; btn1.disabled=false; }
             if(btn2) { btn2.innerText='发送验证码'; btn2.disabled=false; }
+            // 清空输入框
+            document.querySelectorAll('.input-text,.code-input').forEach(el=>el.value='');
         }
+
+        // 倒计时
         function startCount(btnId) {
             const btn = document.getElementById(btnId);
             countdown = 60;
@@ -341,70 +376,111 @@
             },1000);
         }
 
+        // ==================== 验证码发送 ====================
         function sendCode() {
-            const phone = document.getElementById('phone').value.trim();
-            if(!phone) {
+            const account = document.getElementById('phone').value.trim();
+            if(!account) {
                 showToast('请输入手机号/邮箱');
                 return;
             }
-            const regList = getRegisteredPhones();
-            if(!regList.includes(phone)){
+            const accountMap = getAccountMap();
+            // 判断账号是否存在（手机号/邮箱都存在map里）
+            if(!accountMap.hasOwnProperty(account)){
                 showToast('该账号未注册，请先注册');
                 return;
             }
             startCount('sendCodeBtn');
         }
-
         function regSendCode() {
             startCount('regSendBtn');
         }
+
+        // ==================== 验证码登录（手机号/邮箱通用） ====================
         function loginBySms() {
-            const phone = document.getElementById('phone').value.trim();
+            const account = document.getElementById('phone').value.trim();
             const code = document.getElementById('code').value.trim();
             const agree = document.getElementById('agree1').checked;
-            const registeredPhones = getRegisteredPhones();
+            const accountMap = getAccountMap();
+
             if(!agree) { showToast('请先阅读并同意协议'); return; }
-            if(!registeredPhones.includes(phone)) {
-                showToast('手机号未注册，3秒后跳转到注册',3000);
+            if(!accountMap.hasOwnProperty(account)) {
+                showToast('账号未注册，3秒后跳转到注册',3000);
                 setTimeout(()=>switchPage('login-sms','register'),3000);
                 return;
             }
             if(code !== correctCode) { showToast('验证码错误，请重新输入'); return; }
+
             if (window.XueWuyaAuth) XueWuyaAuth.setUser();
             showToast('登录成功');
             setTimeout(()=>{
                 window.location.href = 'home.html';
             },1000);
         }
+
+        // ==================== 密码登录（支持手机号/邮箱） ====================
         function loginByPwd() {
-            const id = document.getElementById('userid').value.trim();
+            const account = document.getElementById('userid').value.trim();
             const pwd = document.getElementById('pwd').value.trim();
             const agree = document.getElementById('agree2').checked;
+            const accountMap = getAccountMap();
+
             if(!agree) { showToast('请先阅读并同意协议'); return; }
-            if(id !== defaultUserId) { showToast('用户ID不存在'); return; }
-            if(pwd !== defaultPwd) { showToast('密码错误'); return; }
+            if(!accountMap.hasOwnProperty(account)) {
+                showToast('该手机号/邮箱未注册');
+                return;
+            }
+            // 对比本地存储的密码
+            const realPwd = accountMap[account];
+            if(pwd !== realPwd) {
+                showToast('密码错误');
+                return;
+            }
+
             if (window.XueWuyaAuth) XueWuyaAuth.setUser();
             showToast('登录成功');
             setTimeout(()=>{
                 window.location.href = 'home.html';
             },1000);
         }
+
+        // ==================== 注册逻辑 ====================
         function doRegister() {
             const phone = document.getElementById('reg_phone').value.trim();
+            const email = document.getElementById('reg_email').value.trim();
             const pwd1 = document.getElementById('reg_pwd1').value.trim();
             const pwd2 = document.getElementById('reg_pwd2').value.trim();
             const code = document.getElementById('reg_code').value.trim();
             const agree = document.getElementById('agree3').checked;
-            const registeredPhones = getRegisteredPhones();
+            const accountMap = getAccountMap();
+
+            // 基础校验
             if(!agree) { showToast('请先阅读并同意协议'); return; }
+            if(!phone) { showToast('请填写手机号'); return; }
+            if(!email) { showToast('请填写邮箱'); return; }
             if(code !== correctCode) { showToast('验证码错误，请重新输入'); return; }
             if(pwd1 !== pwd2) { showToast('两次输入密码不一致'); return; }
-            if(!pwd1 || !pwd2) { showToast('密码不能为空'); return; }
-            if(registeredPhones.includes(phone)) { showToast('该手机号已被注册，请直接登录'); return; }
+            if(!pwd1) { showToast('密码不能为空'); return; }
+
+            // 判断手机号/邮箱是否已注册
+            if(accountMap.hasOwnProperty(phone)) {
+                showToast('该手机号已被注册，请直接登录');
+                return;
+            }
+            if(accountMap.hasOwnProperty(email)) {
+                showToast('该邮箱已被注册，请直接登录');
+                return;
+            }
+
+            // 保存：手机号、邮箱都作为独立登录账号，共用一套密码
             saveRegisteredPhone(phone);
+            saveAccount(phone, pwd1);
+            saveAccount(email, pwd1);
+
             showToast('注册成功，即将返回登录',2000);
             setTimeout(()=>switchPage('register','login-sms'),2000);
         }
+
+        // 游客登录
         function loginAsGuest() {
             if (window.XueWuyaAuth) XueWuyaAuth.setGuest();
             showToast('已进入游客模式');
@@ -412,6 +488,9 @@
                 window.location.href = 'baixiaotang.html';
             }, 800);
         }
+
+        // 页面加载自动初始化默认账号
+        initDefaultAccount();
     </script>
     <script src="js/auth.js"></script>
     <script src="js/elder-mode.js"></script>
